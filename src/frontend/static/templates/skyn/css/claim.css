@@ -1,0 +1,129 @@
+.container {
+    width: 100%;
+    min-height: 100vh;
+    background-image: url('../assets/images/tela1_background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+.text-content {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+}
+
+@media (min-height: 720px) {
+    .text-content {
+        margin-top: 40px;
+    }
+}
+
+.text-content p:first-child {
+    font-family: 'HDColton-XWideLight';
+    color: #fff;
+    font-size: 1.6rem;
+    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+}
+
+.text-content p:nth-child(2) {
+    font-family: 'HDColton-XWideSemiBold';
+    font-size: 1.5rem;
+    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+    color: #FDBB17;
+}
+
+.text-content p:nth-child(3) {
+    margin-top: 5px;
+    font-family: 'HDColton-XWideLight';
+    font-size: 0.75rem;
+    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+    color: #FDBB17;
+}
+
+@media (min-height: 720px) {
+    .text-content p:nth-child(3) {
+        margin-top: 20px;
+    }
+}
+
+.product-image {
+    width: 100%;
+    height: 280px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.product-image img {
+    width: 25%;
+    object-fit: contain;
+}
+
+.text-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-transform: uppercase;
+
+    @media (min-height: 720px) {
+        margin-top: 20px;
+    }
+}
+
+.text-bottom p:first-child {
+    font-family: 'HDColton-XWideLight';
+    color: #FDBB17;
+    font-size: 1rem;
+    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+}
+
+.text-bottom p:nth-child(2) {
+    font-family: 'HDColton-XWideLight';
+    font-size: 1rem;
+    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+    color: #FDBB17;
+}
+
+.text-bottom p:nth-child(3) {
+    font-family: 'HDColton-XWideSemiBold';
+    font-size: 1rem;
+    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+    color: #FDBB17;
+}
+
+
+.text-footer {
+    margin-top: 30px;
+    padding-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-transform: uppercase;
+    gap: 1px;
+}
+
+@media (min-height: 720px) {
+    .text-footer {
+        margin-top: 60px;
+    }
+}
+
+.text-footer p {
+    font-family: 'HDColton-XWideLight';
+    font-size: 5px;
+    letter-spacing: 0.2rem;
+    color: #FDBB17;
+    text-align: center;
+    margin: 0;
+}

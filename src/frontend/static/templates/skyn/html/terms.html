@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyn - Termos</title>
+    <link rel="stylesheet" href="/templates/skyn/css/skyn-root.css">
+    <link rel="stylesheet" href="/templates/skyn/css/terms.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/templates/skyn/assets/images/skyn_logo.png" alt="Skyn Logo">
+        </div>
+        <div class="content">
+
+            <div class="terms-content">
+                <p>
+                    No caso específico da captação e armazenamento dos e-mails dos participantes — que será realizada
+                    exclusivamente para o envio de newsletter do cliente LIFESTYLES HEALTHCARE —, é essencial que a
+                    LIFESTYLES HEALTHCARE deixe claro ao consumidor, na página que será aberta após o escaneamento do QR
+                    Code da ação, que:
+                </p>
+                <p>
+                    <strong>1. Finalidade exclusiva:</strong> a coleta do e-mail ocorrerá única e exclusivamente para o
+                    envio de comunicações das marcas LIFESTYLES HEALTHCARE, sem utilização para outras finalidades.
+                </p>
+                <p>
+                    <strong>2. Responsabilidade pelo tratamento:</strong> a LIFESTYLES HEALTHCARE será integralmente
+                    responsável por qualquer demanda, solicitação ou reclamação relacionada à captação, armazenamento e
+                    uso desses dados pessoais, conforme determina a Lei Geral de Proteção de Dados (LGPD).
+                </p>
+                <p>
+                    <strong>3. Canal de contato:</strong> a página deverá disponibilizar o canal de comunicação (e-mail
+                    e/ou telefone) do DPO ou SAC da SKYN, para que o consumidor possa exercer seus direitos, revogar o
+                    consentimento a qualquer tempo ou esclarecer dúvidas sobre o tratamento dos seus dados pessoais.
+                    consumidor@blowtex.com.br / 0800 773 6968 / (41) 99201-6156
+                </p>
+                <p>
+                    <strong>4. Política de Privacidade:</strong> a página deverá conter o link para a Política de
+                    Privacidade de Dados da SKYN, permitindo que o consumidor tenha acesso integral às informações sobre
+                    o tratamento de seus dados. Segue link: <a href="https://skyn.com/pt-br/privacy-policy/"
+                        target="_blank">https://skyn.com/pt-br/privacy-policy/</a>
+                </p>
+            </div>
+
+            <label class="checkbox-container">
+                <input type="checkbox" id="accept-terms">
+                ACEITO OS TERMOS E CONDIÇÕES
+            </label>
+
+            <p class="after-terms-text">
+                AO ACEITAR OS SEUS DADOS SERÃO USADOS EXCLUSIVAMENTE PARA ENVIO DE NEWSLETTER
+            </p>
+
+            <div class="button-container">
+                <button class="btn" id="continue-btn">CONTINUAR</button>
+            </div>
+
+        </div>
+
+        <div class="footer-product">
+            <img src="/templates/skyn/assets/images/product_footer.png" alt="SKYN ELITE Product">
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const termsContent = document.querySelector('.terms-content');
+            const checkbox = document.getElementById('accept-terms');
+            const btn = document.getElementById('continue-btn');
+
+            // Inicialmente, desabilita o checkbox e o botão
+            checkbox.disabled = true;
+            btn.disabled = true;
+            btn.style.opacity = 0.5;
+            checkbox.style.opacity = 0.5;
+
+            termsContent.addEventListener('scroll', function () {
+                if (termsContent.scrollTop + termsContent.clientHeight >= termsContent.scrollHeight - 2) {
+                    checkbox.disabled = false;
+                    checkbox.style.opacity = 1;
+                }
+            });
+
+            function adjustTermsHeight() {
+                if (termsContent.scrollHeight > termsContent.clientHeight) {
+                    termsContent.style.overflowY = 'auto';
+                } else {
+                    checkbox.disabled = false;
+                    checkbox.style.opacity = 1;
+                }
+            }
+            adjustTermsHeight();
+
+            checkbox.addEventListener('change', function () {
+                if (checkbox.checked) {
+                    btn.disabled = false;
+                    btn.style.opacity = 1;
+                } else {
+                    btn.disabled = true;
+                    btn.style.opacity = 0.5;
+                }
+            });
+
+            // Adiciona evento de clique no checkbox
+            checkbox.addEventListener('click', function (e) {
+                if (checkbox.disabled) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    Swal.fire({
+                        title: 'Atenção!',
+                        text: 'É necessário ler todos os termos e condições antes de aceitar.',
+                        icon: 'warning',
+                        confirmButtonText: 'Entendi',
+                        confirmButtonColor: '#000',
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        customClass: {
+                            title: 'swal-title',
+                            content: 'swal-content'
+                        }
+                    });
+                }
+            });
+
+            // Adiciona evento de clique no botão
+            btn.addEventListener('click', function (e) {
+                if (btn.disabled) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    Swal.fire({
+                        title: 'Atenção!',
+                        text: 'É necessário ler todos os termos e aceitar as condições antes de continuar.',
+                        icon: 'warning',
+                        confirmButtonText: 'Entendi',
+                        confirmButtonColor: '#000',
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        customClass: {
+                            title: 'swal-title',
+                            content: 'swal-content'
+                        }
+                    });
+                } else {
+                    checkTermsAndContinue();
+                }
+            });
+
+            // Adiciona eventos de toque para dispositivos móveis
+            checkbox.addEventListener('touchstart', function (e) {
+                if (checkbox.disabled) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    Swal.fire({
+                        title: 'Atenção!',
+                        text: 'É necessário ler todos os termos e condições antes de aceitar.',
+                        icon: 'warning',
+                        confirmButtonText: 'Entendi',
+                        confirmButtonColor: '#000',
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        customClass: {
+                            title: 'swal-title',
+                            content: 'swal-content'
+                        }
+                    });
+                }
+            });
+
+            btn.addEventListener('touchstart', function (e) {
+                if (btn.disabled) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    Swal.fire({
+                        title: 'Atenção!',
+                        text: 'É necessário ler todos os termos e aceitar as condições antes de continuar.',
+                        icon: 'warning',
+                        confirmButtonText: 'Entendi',
+                        confirmButtonColor: '#000',
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        customClass: {
+                            title: 'swal-title',
+                            content: 'swal-content'
+                        }
+                    });
+                }
+            });
+        });
+
+        function checkTermsAndContinue() {
+            const checkbox = document.getElementById('accept-terms');
+            const termsContent = document.querySelector('.terms-content');
+
+            // Verifica se o usuário leu até o final dos termos
+            const hasReadToEnd = termsContent.scrollTop + termsContent.clientHeight >= termsContent.scrollHeight - 2;
+
+            if (!hasReadToEnd) {
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: 'É necessário ler todos os termos e condições antes de continuar.',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendi',
+                    confirmButtonColor: '#000',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    customClass: {
+                        title: 'swal-title',
+                        content: 'swal-content'
+                    }
+                });
+                return;
+            }
+
+            if (!checkbox.checked) {
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: 'É necessário aceitar os termos e condições antes de continuar.',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendi',
+                    confirmButtonColor: '#000',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    customClass: {
+                        title: 'swal-title',
+                        content: 'swal-content'
+                    }
+                });
+                return;
+            }
+
+            // Se tudo estiver correto, redireciona com query params
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryString = urlParams.toString();
+            const formUrl = queryString ? `/api/skyn/form?${queryString}` : '/api/skyn/form';
+            window.location.href = formUrl;
+        }
+    </script>
+</body>
+
+</html>

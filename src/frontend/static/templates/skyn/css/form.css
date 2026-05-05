@@ -1,0 +1,133 @@
+.container {
+    width: 100%;
+    min-height: 100vh;
+    background-image: url('../assets/images/tela1_background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    font-family: 'HDColton-XWideMedium';
+    color: #FDBB17;
+    text-align: center;
+    font-size: 0.6rem;
+    letter-spacing: 0.2rem;
+    margin-top: 20px;
+}
+
+@media (min-height: 720px) {
+    .title {
+        margin-top: 40px;
+    }
+}
+
+form {
+    margin-top: 20px;
+    width: 100%;
+}
+
+@media (min-height: 720px) {
+    form {
+        margin-top: 40px;
+    }
+}
+
+.form-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.form-label {
+    margin-bottom: 5px;
+    font-family: 'HDColton-XWideMedium';
+    color: #FDBB17;
+    font-size: 0.8rem;
+    letter-spacing: 0.2rem;
+}
+
+.form-input {
+    margin-bottom: 20px;
+    padding: 8px;
+    width: 80%;
+    font-size: 1rem;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.5);
+    font-family: 'HDColton-XWideMedium';
+    color: #000;
+    letter-spacing: 0px;
+}
+
+.form-input.invalid {
+    border: 2px solid #ff0000;
+}
+
+.form-error {
+    color: #ff0000;
+    font-size: 0.7rem;
+    margin-top: -15px;
+    margin-bottom: 10px;
+    font-family: 'HDColton-XWideMedium';
+    text-align: center;
+    width: 80%;
+}
+
+.image-container {
+    width: 100%;
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+}
+
+@media (min-height: 720px) {
+    .image-container {
+        margin-top: 30px;
+        margin: 40px;
+    }
+}
+
+.image-container img {
+    object-fit: contain;
+    width: 25%;
+}
+
+.button-container {
+    margin-top: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (min-height: 720px) {
+    .button-container {
+        margin-top: 30px;
+    }
+}
+
+.button-container button {
+    font-family: 'HDColton-XWideMedium';
+    letter-spacing: 0.2rem;
+    padding: 10px 30px;
+    font-size: 0.8rem;
+    background-color: #000;
+    color: #FDBB17;
+    border: none;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.button-container .btn:disabled {
+    cursor: not-allowed;
+    background-color: #00000060;
+}

@@ -1,0 +1,315 @@
+{
+  "designSystem": {
+    "name": "SKYN Brand Design System",
+    "version": "1.0.0",
+    "description": "Premium brand design system for SKYN products with dark aesthetic, golden accents, and elegant typography",
+    
+    "colors": {
+      "primary": {
+        "black": "#000000",
+        "golden": "#D4AF37",
+        "goldenLight": "#F4E4BC",
+        "white": "#FFFFFF"
+      },
+      "overlay": {
+        "darkOverlay": "rgba(0, 0, 0, 0.7)",
+        "lightOverlay": "rgba(255, 255, 255, 0.1)",
+        "mediumOverlay": "rgba(255, 255, 255, 0.3)"
+      },
+      "text": {
+        "primary": "#FFFFFF",
+        "secondary": "rgba(255, 255, 255, 0.8)",
+        "muted": "rgba(255, 255, 255, 0.6)",
+        "accent": "#D4AF37"
+      },
+      "form": {
+        "inputBg": "rgba(255, 255, 255, 0.1)",
+        "inputBorder": "rgba(255, 255, 255, 0.3)",
+        "inputFocus": "#D4AF37"
+      }
+    },
+
+    "typography": {
+      "fontFamilies": {
+        "primary": "'Montserrat', sans-serif",
+        "accent": "'Playfair Display', serif"
+      },
+      "fontSizes": {
+        "xs": "0.75rem",
+        "sm": "0.875rem", 
+        "base": "1rem",
+        "lg": "1.125rem",
+        "xl": "1.25rem",
+        "2xl": "1.5rem",
+        "3xl": "1.875rem",
+        "4xl": "2.25rem",
+        "5xl": "3rem"
+      },
+      "fontWeights": {
+        "light": 300,
+        "normal": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700,
+        "extrabold": 800
+      },
+      "letterSpacing": {
+        "normal": "0",
+        "wide": "0.1em",
+        "wider": "0.15em", 
+        "widest": "0.2em"
+      }
+    },
+
+    "spacing": {
+      "xs": "0.5rem",
+      "sm": "0.75rem",
+      "md": "1rem", 
+      "lg": "1.5rem",
+      "xl": "2rem",
+      "2xl": "3rem",
+      "3xl": "4rem"
+    },
+
+    "components": {
+      "page": {
+        "className": "page",
+        "description": "Main page container with full height",
+        "structure": {
+          "background": "page-background",
+          "overlay": "page-overlay", 
+          "content": "page-content"
+        }
+      },
+      
+      "header": {
+        "className": "header",
+        "description": "Fixed header with logo",
+        "elements": {
+          "logo": "logo"
+        }
+      },
+
+      "layouts": {
+        "container": {
+          "className": "container",
+          "maxWidth": "1200px",
+          "description": "Main content container with responsive padding"
+        },
+        "splitLayout": {
+          "className": "split-layout", 
+          "description": "Two-column grid layout for desktop"
+        },
+        "contentCard": {
+          "className": "content-card",
+          "description": "Glassmorphism card for forms and content"
+        },
+        "productShowcase": {
+          "className": "product-showcase",
+          "description": "Centered product display with image and text"
+        }
+      },
+
+      "typography": {
+        "headline": {
+          "className": "headline",
+          "variants": ["headline-large"],
+          "description": "Main page headlines using accent font"
+        },
+        "brandName": {
+          "className": "brand-name", 
+          "description": "SKYN brand name styling"
+        },
+        "productName": {
+          "className": "product-name",
+          "description": "Product name (ELITE) styling"
+        },
+        "tagline": {
+          "className": "tagline",
+          "description": "Small tagline text (Feel Everything)"
+        },
+        "subheading": {
+          "className": "subheading",
+          "description": "Supporting headline text"
+        },
+        "bodyText": {
+          "className": "body-text",
+          "description": "Main paragraph text"
+        },
+        "smallText": {
+          "className": "small-text", 
+          "description": "Fine print and captions"
+        }
+      },
+
+      "buttons": {
+        "primary": {
+          "className": "btn btn-primary",
+          "description": "Golden primary button",
+          "background": "#D4AF37",
+          "color": "#000000"
+        },
+        "outline": {
+          "className": "btn btn-outline", 
+          "description": "White outline button",
+          "background": "transparent",
+          "border": "2px solid #FFFFFF",
+          "color": "#FFFFFF"
+        },
+        "link": {
+          "className": "btn btn-link",
+          "description": "Text link button",
+          "background": "none",
+          "color": "#D4AF37"
+        }
+      },
+
+      "forms": {
+        "form": {
+          "className": "form",
+          "description": "Form container with vertical layout"
+        },
+        "formGroup": {
+          "className": "form-group", 
+          "description": "Input group with label"
+        },
+        "formLabel": {
+          "className": "form-label",
+          "description": "Form input labels"
+        },
+        "formInput": {
+          "className": "form-input",
+          "description": "Styled form inputs with glassmorphism"
+        }
+      },
+
+      "utilities": {
+        "textAlign": ["text-center", "text-left", "text-right"],
+        "fontWeight": ["font-light", "font-normal", "font-medium", "font-semibold", "font-bold", "font-extrabold"],
+        "textTransform": ["uppercase", "lowercase", "capitalize"],
+        "letterSpacing": ["letter-wide", "letter-wider", "letter-widest"]
+      }
+    },
+
+    "assets": {
+      "structure": {
+        "baseFolder": "assets/images/",
+        "files": {
+          "backgrounds": "background.jpg",
+          "logo": "logo.png", 
+          "product": "product.png",
+          "footerProduct": "footer_product.png"
+        }
+      }
+    },
+
+    "pageTemplates": {
+      "landingPage": {
+        "name": "Landing Page",
+        "description": "Hero page with product showcase",
+        "structure": [
+          "page > page-background + page-overlay",
+          "header > container > logo",
+          "page-content > container > product-showcase"
+        ],
+        "components": ["headline", "product-image", "tagline", "btn-primary"]
+      },
+      
+      "formPage": {
+        "name": "Form Page", 
+        "description": "Page with form in content card",
+        "structure": [
+          "page > page-background + page-overlay",
+          "header > container > logo", 
+          "page-content > container > content-card > form"
+        ],
+        "components": ["headline", "form-group", "form-input", "btn-primary"]
+      },
+
+      "splitPage": {
+        "name": "Split Layout Page",
+        "description": "Two-column layout with content and product",
+        "structure": [
+          "page > page-background + page-overlay",
+          "header > container > logo",
+          "page-content > container > split-layout"
+        ],
+        "components": ["headline", "body-text", "product-showcase", "buttons"]
+      },
+
+      "termsPage": {
+        "name": "Terms & Conditions",
+        "description": "Text-heavy page with terms content",
+        "structure": [
+          "page > page-background + page-overlay",
+          "header > container > logo",
+          "page-content > container > content-card"
+        ],
+        "components": ["headline", "body-text", "small-text", "btn-outline"]
+      }
+    },
+
+    "breakpoints": {
+      "mobile": "768px",
+      "tablet": "1024px",
+      "desktop": "1200px"
+    },
+
+    "animations": {
+      "transition": "all 0.3s ease",
+      "hover": {
+        "buttons": "transform: translateY(-2px)",
+        "inputs": "border-color: #D4AF37"
+      }
+    },
+
+    "cssVariables": {
+      "colors": {
+        "--primary-black": "#000000",
+        "--dark-overlay": "rgba(0, 0, 0, 0.7)",
+        "--golden": "#D4AF37", 
+        "--golden-light": "#F4E4BC",
+        "--white": "#FFFFFF",
+        "--gray-light": "rgba(255, 255, 255, 0.8)",
+        "--gray-medium": "rgba(255, 255, 255, 0.6)",
+        "--input-bg": "rgba(255, 255, 255, 0.1)",
+        "--input-border": "rgba(255, 255, 255, 0.3)"
+      },
+      "typography": {
+        "--font-primary": "'Montserrat', sans-serif",
+        "--font-accent": "'Playfair Display', serif"
+      },
+      "sizing": {
+        "--container-max": "1200px",
+        "--border-radius": "4px",
+        "--transition": "all 0.3s ease"
+      }
+    },
+
+    "examples": {
+      "basicPageHTML": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>SKYN Page</title>\n    <link rel=\"stylesheet\" href=\"skyn-styles.css\">\n</head>\n<body>\n    <div class=\"page\">\n        <div class=\"page-background\" style=\"background-image: url('assets/images/background.jpg')\"></div>\n        <div class=\"page-overlay\"></div>\n        \n        <header class=\"header\">\n            <div class=\"container\">\n                <img src=\"assets/images/logo.png\" alt=\"SKYN\" class=\"logo\">\n            </div>\n        </header>\n        \n        <main class=\"page-content\">\n            <div class=\"container\">\n                <div class=\"product-showcase\">\n                    <h1 class=\"brand-name\">SKYN</h1>\n                    <h2 class=\"product-name\">ELITE</h2>\n                    <img src=\"assets/images/product.png\" alt=\"Product\" class=\"product-image\">\n                    <p class=\"tagline\">Feel Everything</p>\n                    <button class=\"btn btn-primary\">Prosseguir</button>\n                </div>\n            </div>\n        </main>\n    </div>\n</body>\n</html>"
+    },
+
+    "instructions": {
+      "setup": [
+        "1. Create assets/images/ folder in your project",
+        "2. Add background.jpg, logo.png, product.png, footer_product.png to the folder", 
+        "3. Include the CSS design system in your HTML files",
+        "4. Use the component classes and structure provided"
+      ],
+      "usage": [
+        "- Always wrap content in .page container",
+        "- Include .page-background and .page-overlay for proper styling",
+        "- Use .container for responsive content width",
+        "- Combine utility classes for quick styling",
+        "- Reference the pageTemplates for common layouts"
+      ],
+      "customization": [
+        "- Modify CSS variables to change colors/spacing",
+        "- Add new component variants following naming convention", 
+        "- Extend utility classes as needed",
+        "- Keep the premium dark aesthetic consistent"
+      ]
+    }
+  }
+}

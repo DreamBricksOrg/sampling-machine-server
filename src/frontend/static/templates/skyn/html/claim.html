@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyn - RETIRE</title>
+    <link rel="stylesheet" href="/templates/skyn/css/skyn-root.css">
+    <link rel="stylesheet" href="/templates/skyn/css/claim.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <img src="/templates/skyn/assets/images/skyn_logo.png" alt="Skyn Logo">
+        </div>
+
+        <div class="text-content">
+            <p>RETIRE SUA</p>
+            <p>SKYN® ELITE</p>
+            <p>NO TOTEM AO LADO</p>
+        </div>
+
+        <div class="product-image">
+            <img src="/templates/skyn/assets/images/product.png" alt="Skyn Product">
+        </div>
+
+        <div class="text-bottom">
+            <p>APROVEITE PARA</p>
+            <p>SENTIR 50% MAIS</p>
+            <p>CALOR CORPORAL</p>
+        </div>
+
+        <div class="text-footer">
+            <p>COMPRANDO A UM PRESERVATIVO CLÁSSICO DE</p>
+            <p>POLIISOPRENO ESTUDO DA LIFESTYLES REALIZADO EM 2024,</p>
+            <p>COMPRANDO SKYN® ORIGINAL COM SKYN® ELITE.</p>
+        </div>
+
+    </div>
+
+    <script>
+        async function completeSession() {
+            try {
+                const sessionId = localStorage.getItem('session_id') || 'default-session-id';
+                const slug = localStorage.getItem('slug') || 'default-slug';
+
+                const payload = {
+                    session_id: sessionId,
+                    slug: slug
+                };
+
+                const response = await fetch('/api/skyn/session/complete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    console.log('Session completed successfully');
+                } else {
+                    console.warn('Failed to complete session:', response.status);
+                }
+            } catch (error) {
+                console.error('Error completing session:', error);
+            }
+        }
+
+        // Executa quando a página carrega
+        document.addEventListener('DOMContentLoaded', function () {
+            completeSession();
+        });
+    </script>
+</body>
+
+</html>

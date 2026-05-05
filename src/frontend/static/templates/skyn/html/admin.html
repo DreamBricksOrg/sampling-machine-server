@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/templates/skyn/css/skyn-root.css">
+    <title>SKYN - Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-family: 'HDColton-XWideSemiBold';
+            color: #FDBB17;
+            text-align: center;
+            margin-top: 20px;
+            letter-spacing: 0.2rem;
+            font-size: 2em;
+        }
+
+        h2 {
+            font-family: 'HDColton-XWideLight';
+            color: #FDBB17;
+            text-align: center;
+            margin-top: 10px;
+            letter-spacing: 0.2rem;
+            font-size: 1.2em;
+        }
+
+        .quantity-display {
+            font-family: 'HDColton-XWideSemiBold';
+            color: #FDBB17;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 3em;
+            letter-spacing: 0.2rem;
+        }
+
+        .quantity-label {
+            font-family: 'HDColton-XWideLight';
+            color: #FDBB17;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1em;
+            letter-spacing: 0.1rem;
+        }
+
+        html,
+        body {
+            height: 100%;
+            background-color: black;
+        }
+
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .admin-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .button {
+            font-family: 'HDColton-XWideMedium';
+            background-color: #FDBB17;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #e6a800;
+            transform: translateY(-2px);
+        }
+
+        .button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .input-field {
+            font-family: 'HDColton-XWideMedium';
+            background-color: transparent;
+            border: 2px solid #FDBB17;
+            color: #FDBB17;
+            padding: 15px;
+            font-size: 1rem;
+            text-align: center;
+            width: 100%;
+            max-width: 300px;
+            letter-spacing: 0.1rem;
+        }
+
+        .input-field::placeholder {
+            color: #FDBB17;
+            opacity: 0.7;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #e6a800;
+        }
+
+        .instruction-text {
+            font-family: 'HDColton-XWideLight';
+            color: #FDBB17;
+            text-align: center;
+            font-size: 0.9rem;
+            letter-spacing: 0.1rem;
+            line-height: 1.4;
+            max-width: 400px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 20px;
+            align-items: flex-end;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'HDColton-XWideSemiBold';
+            color: #FDBB17;
+            font-size: 1.5em;
+        }
+
+        .stat-label {
+            font-family: 'HDColton-XWideLight';
+            color: #FDBB17;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/templates/skyn/assets/images/skyn_logo.png" alt="SKYN Logo">
+        </div>
+
+        <div class="admin-content">
+            <h2>ADMINISTRAÇÃO</h2>
+
+            <div class="quantity-label">QUANTIDADE DE CAMISINHAS RESTANTES</div>
+            <div class="quantity-display" id="current-quantity">0</div>
+
+            <button class="button" id="dispense-button" onclick="dispenseCondom()">LIBERAR UMA CAMISINHA</button>
+
+            <div class="instruction-text">
+                INFORME A QUANTIDADE DE CAMISINHAS NA MÁQUINA APÓS O ABASTECIMENTO E CLIQUE NO BOTÃO PARA CONFIRMAR
+            </div>
+
+            <input type="number" class="input-field" id="new-quantity" placeholder="Quantidade após abastecimento"
+                min="0">
+
+            <button class="button" onclick="restockCondoms()">ABASTECER CAMISINHAS</button>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-dispensed">0</div>
+                    <div class="stat-label">TOTAL LIBERADAS</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="last-updated">-</div>
+                    <div class="stat-label">ÚLTIMA ATUALIZAÇÃO</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('DEBUG: Script loaded');
+        
+        let inventoryData = {
+            current_quantity: 0,
+            last_updated: null,
+            total_dispensed: 0
+        };
+
+        // Controle para impedir múltiplas requisições simultâneas
+        let isProcessingDispense = false;
+
+        // Função para carregar dados do inventário
+        async function loadInventory() {
+            try {
+                const response = await fetch('/templates/skyn/assets/inventory.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    // Garante que todos os campos necessários existam
+                    inventoryData = {
+                        current_quantity: data.current_quantity || 0,
+                        total_dispensed: data.total_dispensed || 0,
+                        last_updated: data.last_updated || null,
+                        previous_quantity: data.previous_quantity || 0,
+                        quantity_change: data.quantity_change || 0
+                    };
+                    updateDisplay();
+                } else {
+                    console.error('Erro ao carregar inventário:', response.status);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar inventário:', error);
+                // Inicializa com valores padrão em caso de erro
+                inventoryData = {
+                    current_quantity: 0,
+                    total_dispensed: 0,
+                    last_updated: null,
+                    previous_quantity: 0,
+                    quantity_change: 0
+                };
+                updateDisplay();
+            }
+        }
+
+
+
+        // Função para atualizar a exibição
+        function updateDisplay() {
+            document.getElementById('current-quantity').textContent = inventoryData.current_quantity;
+            document.getElementById('total-dispensed').textContent = inventoryData.total_dispensed;
+
+            if (inventoryData.last_updated) {
+                const date = new Date(inventoryData.last_updated);
+                // Formata data e hora no padrão brasileiro
+                const formattedDate = date.toLocaleDateString('pt-BR') + ' ' +
+                    date.toLocaleTimeString('pt-BR', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                document.getElementById('last-updated').textContent = formattedDate;
+            } else {
+                document.getElementById('last-updated').textContent = '-';
+            }
+        }
+
+        // Função para liberar uma camisinha
+        async function dispenseCondom() {
+            console.log('DEBUG: dispenseCondom function called');
+            
+            // Verifica se já está processando uma requisição
+            if (isProcessingDispense) {
+                console.log('DEBUG: Already processing, returning');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Processando...',
+                    text: 'Aguarde, ainda estamos processando a liberação anterior.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            if (inventoryData.current_quantity <= 0) {
+                console.log('DEBUG: No inventory available');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Estoque Vazio',
+                    text: 'Não há camisinhas disponíveis para liberar',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            console.log('DEBUG: Starting dispense process');
+            console.log('DEBUG: Current inventory:', inventoryData.current_quantity);
+
+            // Marca como processando
+            isProcessingDispense = true;
+
+            // Atualiza o botão para mostrar que está processando
+            const dispenseButton = document.getElementById('dispense-button');
+            dispenseButton.textContent = 'PROCESSANDO...';
+            dispenseButton.disabled = true;
+
+            try {
+                console.log('DEBUG: Making fetch request to /api/skyn/admin/dispense');
+                const response = await fetch('/api/skyn/admin/dispense', {
+                    method: 'POST'
+                });
+
+                console.log('DEBUG: Response received:', response);
+                console.log('DEBUG: Response status:', response.status);
+                console.log('DEBUG: Response ok:', response.ok);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('DEBUG: Response JSON:', result);
+
+                    if (result.status === "completed") {
+                        console.log('DEBUG: Dispense completed successfully');
+                        // Recarrega dados do inventário (que foram atualizados pelo backend)
+                        await loadInventory();
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Liberada!',
+                            text: 'Uma camisinha foi liberada com sucesso',
+                            confirmButtonText: 'OK'
+                        });
+                    } else if (result.status === "failed") {
+                        console.log('DEBUG: Dispense failed');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Falha na Liberação',
+                            text: 'Não foi possível liberar a camisinha. Verifique se a máquina está funcionando.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                } else {
+                    console.log('DEBUG: Response not ok, status:', response.status);
+                    throw new Error('Erro ao liberar camisinha');
+                }
+            } catch (error) {
+                console.error('Erro ao liberar camisinha:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Erro ao liberar camisinha',
+                    confirmButtonText: 'OK'
+                });
+            } finally {
+                // Sempre libera o controle de processamento
+                isProcessingDispense = false;
+
+                // Restaura o botão
+                const dispenseButton = document.getElementById('dispense-button');
+                dispenseButton.textContent = 'LIBERAR UMA CAMISINHA';
+                dispenseButton.disabled = false;
+            }
+        }
+
+        // Função para abastecer camisinhas
+        async function restockCondoms() {
+            const newQuantity = parseInt(document.getElementById('new-quantity').value);
+
+            if (isNaN(newQuantity) || newQuantity < 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Valor Inválido',
+                    text: 'Por favor, informe uma quantidade válida',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            const oldQuantity = inventoryData.current_quantity;
+
+            // Preserva o total_dispensed e atualiza apenas a quantidade
+            const updateData = {
+                current_quantity: newQuantity,
+                total_dispensed: inventoryData.total_dispensed || 0
+            };
+
+            try {
+                const response = await fetch('/api/skyn/admin/inventory', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao salvar inventário');
+                }
+
+                // Recarrega os dados do inventário para garantir sincronização
+                await loadInventory();
+                document.getElementById('new-quantity').value = '';
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Abastecido!',
+                    text: `Estoque atualizado de ${oldQuantity} para ${newQuantity} camisinhas`,
+                    confirmButtonText: 'OK'
+                });
+            } catch (error) {
+                console.error('Erro ao abastecer:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Erro ao atualizar estoque',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        // Carregar dados quando a página carregar
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('DEBUG: DOM loaded, setting up event listeners');
+            loadInventory();
+            
+            // Adiciona event listener alternativo para o botão de dispensar
+            const dispenseButton = document.getElementById('dispense-button');
+            if (dispenseButton) {
+                console.log('DEBUG: Dispense button found, adding event listener');
+                dispenseButton.addEventListener('click', function(e) {
+                    console.log('DEBUG: Button clicked via event listener');
+                    dispenseCondom();
+                });
+            } else {
+                console.error('DEBUG: Dispense button not found!');
+            }
+        });
+
+        // Permitir envio do formulário com Enter
+        document.getElementById('new-quantity').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                restockCondoms();
+            }
+        });
+    </script>
+</body>
+
+</html>

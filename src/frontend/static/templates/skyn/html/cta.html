@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyn - CTA</title>
+    <link rel="stylesheet" href="/templates/skyn/css/skyn-root.css">
+    <link rel="stylesheet" href="/templates/skyn/css/cta.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <img src="/templates/skyn/assets/images/skyn_logo.png" alt="Skyn Logo">
+        </div>
+
+        <div class="text-content">
+            <p>para retirar sua</p>
+            <p>skyn® elite</p>
+            <p>clique em prosseguir</p>
+        </div>
+
+        <div class="product-image">
+            <img src="/templates/skyn/assets/images/product.png" alt="Skyn Product">
+        </div>
+
+        <div class="button-container">
+            <button class="btn" onclick="proceedToTerms()">prosseguir</button>
+        </div>
+    </div>
+
+    <script>
+        // Função para capturar parâmetros da URL
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Função para obter informações da sessão via API
+        async function getSessionInfo(sessionId) {
+            try {
+                const response = await fetch(`/api/skyn/session/${sessionId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    return data;
+                } else {
+                    console.error('Erro ao obter informações da sessão:', response.status);
+                    return null;
+                }
+            } catch (error) {
+                console.error('Erro ao fazer requisição para obter sessão:', error);
+                return null;
+            }
+        }
+
+        // Função para salvar session_id e slug no localStorage
+        async function saveSessionData() {
+            const sessionId = getUrlParameter('sid');
+
+            if (sessionId) {
+                localStorage.setItem('session_id', sessionId);
+                console.log('Session ID salvo:', sessionId);
+
+                // Obtém o slug via API
+                const sessionInfo = await getSessionInfo(sessionId);
+                if (sessionInfo && sessionInfo.slug) {
+                    localStorage.setItem('slug', sessionInfo.slug);
+                    console.log('Slug obtido via API e salvo:', sessionInfo.slug);
+                } else {
+                    console.log('Não foi possível obter o slug via API');
+                }
+            } else {
+                console.log('Nenhum session_id encontrado na URL');
+            }
+        }
+
+        // Função para prosseguir para a página de termos com query params
+        function proceedToTerms() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryString = urlParams.toString();
+            const termsUrl = queryString ? `/api/skyn/terms?${queryString}` : '/api/skyn/terms';
+            window.location.href = termsUrl;
+        }
+
+        // Executa quando a página carrega
+        document.addEventListener('DOMContentLoaded', function () {
+            saveSessionData();
+        });
+    </script>
+</body>
+
+</html>
