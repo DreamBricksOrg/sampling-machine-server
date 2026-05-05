@@ -1,4 +1,4 @@
-import structlog
+﻿import structlog
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -16,7 +16,7 @@ from routes.api import router as api_router
 from routes.registrations import router as reg_router
 from routes.auth import router as auth_router
 from routes.admin import router as admin_router
-from routes.skyn import router as skyn_router
+from routes.docile import router as docile_router
 
 from middlewares.replay_guard import ReplayGuardMiddleware
 
@@ -67,14 +67,14 @@ app.add_middleware(ReplayGuardMiddleware, ttl_seconds=4)
 app.mount("/design", StaticFiles(directory=STATIC_DIR / "design"), name="design")
 app.mount("/templates", StaticFiles(directory=STATIC_DIR / "templates"), name="templates")
 app.mount("/templates/admin", StaticFiles(directory=STATIC_DIR / "templates" / "admin"), name="templates_admin")
-app.mount("/templates/skyn", StaticFiles(directory=STATIC_DIR / "templates" / "skyn"), name="templates_skyn")
+app.mount("/templates/docile", StaticFiles(directory=STATIC_DIR / "templates" / "docile"), name="templates_docile")
 
 
 app.include_router(api_router)
 app.include_router(reg_router)
 app.include_router(auth_router)
 app.include_router(admin_router)
-app.include_router(skyn_router)
+app.include_router(docile_router)
 
 @app.on_event("startup")
 async def on_startup():

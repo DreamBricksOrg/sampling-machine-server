@@ -1,8 +1,8 @@
-{
+﻿{
   "designSystem": {
-    "name": "SKYN Brand Design System",
+    "name": "DOCILE Brand Design System",
     "version": "1.0.0",
-    "description": "Premium brand design system for SKYN products with dark aesthetic, golden accents, and elegant typography",
+    "description": "Premium brand design system for DOCILE products with dark aesthetic, golden accents, and elegant typography",
     
     "colors": {
       "primary": {
@@ -118,7 +118,7 @@
         },
         "brandName": {
           "className": "brand-name", 
-          "description": "SKYN brand name styling"
+          "description": "DOCILE brand name styling"
         },
         "productName": {
           "className": "product-name",
@@ -287,7 +287,7 @@
     },
 
     "examples": {
-      "basicPageHTML": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>SKYN Page</title>\n    <link rel=\"stylesheet\" href=\"skyn-styles.css\">\n</head>\n<body>\n    <div class=\"page\">\n        <div class=\"page-background\" style=\"background-image: url('assets/images/background.jpg')\"></div>\n        <div class=\"page-overlay\"></div>\n        \n        <header class=\"header\">\n            <div class=\"container\">\n                <img src=\"assets/images/logo.png\" alt=\"SKYN\" class=\"logo\">\n            </div>\n        </header>\n        \n        <main class=\"page-content\">\n            <div class=\"container\">\n                <div class=\"product-showcase\">\n                    <h1 class=\"brand-name\">SKYN</h1>\n                    <h2 class=\"product-name\">ELITE</h2>\n                    <img src=\"assets/images/product.png\" alt=\"Product\" class=\"product-image\">\n                    <p class=\"tagline\">Feel Everything</p>\n                    <button class=\"btn btn-primary\">Prosseguir</button>\n                </div>\n            </div>\n        </main>\n    </div>\n</body>\n</html>"
+      "basicPageHTML": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>DOCILE Page</title>\n    <link rel=\"stylesheet\" href=\"docile-styles.css\">\n</head>\n<body>\n    <div class=\"page\">\n        <div class=\"page-background\" style=\"background-image: url('assets/images/background.jpg')\"></div>\n        <div class=\"page-overlay\"></div>\n        \n        <header class=\"header\">\n            <div class=\"container\">\n                <img src=\"assets/images/logo.png\" alt=\"DOCILE\" class=\"logo\">\n            </div>\n        </header>\n        \n        <main class=\"page-content\">\n            <div class=\"container\">\n                <div class=\"product-showcase\">\n                    <h1 class=\"brand-name\">DOCILE</h1>\n                    <h2 class=\"product-name\">ELITE</h2>\n                    <img src=\"assets/images/product.png\" alt=\"Product\" class=\"product-image\">\n                    <p class=\"tagline\">Feel Everything</p>\n                    <button class=\"btn btn-primary\">Prosseguir</button>\n                </div>\n            </div>\n        </main>\n    </div>\n</body>\n</html>"
     },
 
     "instructions": {

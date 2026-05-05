@@ -1,4 +1,4 @@
-import csv
+﻿import csv
 import io
 import jwt
 import structlog
@@ -19,7 +19,7 @@ log = structlog.get_logger()
 bearer = HTTPBearer(auto_error=False)
 router = APIRouter(prefix="/api/admin")
 
-DEFAULT_COLLECTION = "skyn_elite"
+DEFAULT_COLLECTION = "docile_elite"
 
 def get_collection(name: str = DEFAULT_COLLECTION):
     return db[name]

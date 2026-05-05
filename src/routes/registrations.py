@@ -1,4 +1,4 @@
-import uuid
+﻿import uuid
 import structlog
 
 from datetime import datetime, date, timedelta, timezone, time
@@ -23,7 +23,7 @@ from core.db import db
 log = structlog.get_logger()
 router = APIRouter(prefix="/api/users")
 
-DEFAULT_COLLECTION = "skyn_elite"
+DEFAULT_COLLECTION = "docile_elite"
 
 def get_collection(collection_name: str = DEFAULT_COLLECTION):
     return db[collection_name]

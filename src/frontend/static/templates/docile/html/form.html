@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skyn - Formulário</title>
-    <link rel="stylesheet" href="/templates/skyn/css/skyn-root.css">
-    <link rel="stylesheet" href="/templates/skyn/css/form.css">
+    <title>Docile - Formulário</title>
+    <link rel="stylesheet" href="/templates/docile/css/docile-root.css">
+    <link rel="stylesheet" href="/templates/docile/css/form.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
@@ -14,7 +14,7 @@
     <div class="container">
 
         <div class="header">
-            <img src="/templates/skyn/assets/images/skyn_logo.png" alt="Skyn Logo">
+            <img src="/templates/docile/assets/images/docile_logo.png" alt="Docile Logo">
         </div>
 
         <div class="content">
@@ -40,7 +40,7 @@
             </form>
 
             <div class="image-container">
-                <img src="/templates/skyn/assets/images/product.png" alt="">
+                <img src="/templates/docile/assets/images/product.png" alt="">
             </div>
 
         </div>
@@ -65,7 +65,7 @@
         const emailErro = document.getElementById('email-erro');
         const formulario = document.getElementById('formulario');
 
-        const COLLECTION = 'skyn_elite';
+        const COLLECTION = 'docile_elite';
 
         // Função para capturar parâmetros da URL
         function getUrlParameter(name) {
@@ -188,7 +188,7 @@
                     // Redireciona com query params imediatamente
                     const urlParams = new URLSearchParams(window.location.search);
                     const queryString = urlParams.toString();
-                    const claimUrl = queryString ? `/api/skyn/claim?${queryString}` : '/api/skyn/claim';
+                    const claimUrl = queryString ? `/api/docile/claim?${queryString}` : '/api/docile/claim';
                     window.location.href = claimUrl;
                 } else if (res.status === 409) {
                     // E-mail já cadastrado, tenta registrar pickup mesmo assim
@@ -197,7 +197,7 @@
                     // Redireciona com query params imediatamente
                     const urlParams = new URLSearchParams(window.location.search);
                     const queryString = urlParams.toString();
-                    const claimUrl = queryString ? `/api/skyn/claim?${queryString}` : '/api/skyn/claim';
+                    const claimUrl = queryString ? `/api/docile/claim?${queryString}` : '/api/docile/claim';
                     window.location.href = claimUrl;
                 } else {
                     const msg = (res.data && (res.data.detail || res.data.message)) || res.statusText || 'Erro ao cadastrar';

@@ -1,4 +1,4 @@
-from pydantic import Field
+﻿from pydantic import Field
 from pydantic_settings import BaseSettings
 from typing import Optional
 
@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     SHORTENER_BASE_URL: str = Field("https://go.dbpe.com.br", env="SHORTENER_BASE_URL")
     SHORTENER_USER: str = Field(...,env="SHORTENER_USER")
     SHORTENER_PASSWORD: str = Field(...,env="SHORTENER_PASSWORD")
-    CADASTRO_BASE_URL: str = Field("https://skynelite.ngrok.app/api/skyn/cta", env="CADASTRO_BASE_URL")
+    CADASTRO_BASE_URL: str = Field("https://docileelite.ngrok.app/api/docile/cta", env="CADASTRO_BASE_URL")
     UDP_PORT: int = Field(5004, env="UDP_PORT")
     SERIAL_PORT: str = Field("COM3", env="SERIAL_PORT")
     SERIAL_BAUDRATE: int = Field(9600, env="SERIAL_BAUDRATE")

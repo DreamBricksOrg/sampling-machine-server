@@ -1,11 +1,11 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://localhost:5000}"
-COLLECTION="${COLLECTION:-skyn_elite}"
+COLLECTION="${COLLECTION:-docile_elite}"
 
 echo "1) Init QRCode"
-INIT_JSON=$(curl -sS -X POST "$BASE_URL/api/skyn/qrcode/init" -H "Content-Type: application/json")
+INIT_JSON=$(curl -sS -X POST "$BASE_URL/api/docile/qrcode/init" -H "Content-Type: application/json")
 echo "$INIT_JSON" | jq .
 SESSION_ID=$(echo "$INIT_JSON" | jq -r .session_id)
 SLUG=$(echo "$INIT_JSON" | jq -r .slug)
@@ -23,14 +23,14 @@ curl -sS -D - -o /dev/null "$SHORT_URL" | sed -n '1,10p'
 
 echo "3) Complete Session"
 COMPLETE_BODY=$(jq -n --arg sid "$SESSION_ID" --arg slug "$SLUG" '{session_id:$sid, slug:$slug}')
-COMPLETE_JSON=$(curl -sS -X POST "$BASE_URL/api/skyn/session/complete" \
+COMPLETE_JSON=$(curl -sS -X POST "$BASE_URL/api/docile/session/complete" \
   -H "Content-Type: application/json" \
   --data-binary "$COMPLETE_BODY")
 echo "$COMPLETE_JSON" | jq .
 
 echo "4) Create User (usa o slug como code)"
-EMAIL="skyn.teste+$(date +%s)@example.com"
-CREATE_BODY=$(jq -n --arg name "Teste SKYN" --arg email "$EMAIL" --arg slug "$SLUG" \
+EMAIL="docile.teste+$(date +%s)@example.com"
+CREATE_BODY=$(jq -n --arg name "Teste DOCILE" --arg email "$EMAIL" --arg slug "$SLUG" \
   '{name:$name, email:$email, code:$slug}')
 CREATE_JSON=$(curl -sS -X POST "$BASE_URL/api/users/?collection=$COLLECTION" \
   -H "Content-Type: application/json" \
@@ -52,26 +52,26 @@ echo "OK"
 # -----------------------------------------------------
 
 echo "6) Acessar página /form (simula usuário escaneando QR com sid)"
-curl -sS -D - "$BASE_URL/api/skyn/form?sid=$SESSION_ID" -o /dev/null | head -n 10
+curl -sS -D - "$BASE_URL/api/docile/form?sid=$SESSION_ID" -o /dev/null | head -n 10
 
 echo "7) Concluir sessão novamente (deve recusar ou marcar como encerrada)"
-COMPLETE_JSON2=$(curl -sS -X POST "$BASE_URL/api/skyn/session/complete" \
+COMPLETE_JSON2=$(curl -sS -X POST "$BASE_URL/api/docile/session/complete" \
   -H "Content-Type: application/json" \
   --data-binary "$COMPLETE_BODY")
 echo "$COMPLETE_JSON2" | jq .
 
 echo "8) Acessar página /form após sessão concluída (deve mostrar usada/expirada)"
-curl -sS -D - "$BASE_URL/api/skyn/form?sid=$SESSION_ID" -o /dev/null | head -n 10
+curl -sS -D - "$BASE_URL/api/docile/form?sid=$SESSION_ID" -o /dev/null | head -n 10
 
 echo "9) Acessar /cta (sempre disponível)"
-curl -sS -D - "$BASE_URL/api/skyn/cta" -o /dev/null | head -n 10
+curl -sS -D - "$BASE_URL/api/docile/cta" -o /dev/null | head -n 10
 
 echo "10) Acessar /on (sempre disponível)"
-curl -sS -D - "$BASE_URL/api/skyn/on" -o /dev/null | head -n 10
+curl -sS -D - "$BASE_URL/api/docile/on" -o /dev/null | head -n 10
 
 echo "11) Testar middleware anti-replay (POST /session/complete duas vezes seguidas)"
 BODY=$(jq -n --arg sid "$SESSION_ID" --arg slug "$SLUG" '{session_id:$sid, slug:$slug}')
 curl -s -o /dev/null -w "Primeira chamada: %{http_code}\n" \
-  -X POST "$BASE_URL/api/skyn/session/complete" -H "Content-Type: application/json" --data-binary "$BODY"
+  -X POST "$BASE_URL/api/docile/session/complete" -H "Content-Type: application/json" --data-binary "$BODY"
 curl -s -o /dev/null -w "Segunda chamada (esperado 429): %{http_code}\n" \
-  -X POST "$BASE_URL/api/skyn/session/complete" -H "Content-Type: application/json" --data-binary "$BODY"
+  -X POST "$BASE_URL/api/docile/session/complete" -H "Content-Type: application/json" --data-binary "$BODY"

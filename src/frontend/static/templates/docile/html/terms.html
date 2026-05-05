@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skyn - Termos</title>
-    <link rel="stylesheet" href="/templates/skyn/css/skyn-root.css">
-    <link rel="stylesheet" href="/templates/skyn/css/terms.css">
+    <title>Docile - Termos</title>
+    <link rel="stylesheet" href="/templates/docile/css/docile-root.css">
+    <link rel="stylesheet" href="/templates/docile/css/terms.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
@@ -15,7 +15,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="/templates/skyn/assets/images/skyn_logo.png" alt="Skyn Logo">
+            <img src="/templates/docile/assets/images/docile_logo.png" alt="Docile Logo">
         </div>
         <div class="content">
 
@@ -37,15 +37,15 @@
                 </p>
                 <p>
                     <strong>3. Canal de contato:</strong> a página deverá disponibilizar o canal de comunicação (e-mail
-                    e/ou telefone) do DPO ou SAC da SKYN, para que o consumidor possa exercer seus direitos, revogar o
+                    e/ou telefone) do DPO ou SAC da DOCILE, para que o consumidor possa exercer seus direitos, revogar o
                     consentimento a qualquer tempo ou esclarecer dúvidas sobre o tratamento dos seus dados pessoais.
                     consumidor@blowtex.com.br / 0800 773 6968 / (41) 99201-6156
                 </p>
                 <p>
                     <strong>4. Política de Privacidade:</strong> a página deverá conter o link para a Política de
-                    Privacidade de Dados da SKYN, permitindo que o consumidor tenha acesso integral às informações sobre
-                    o tratamento de seus dados. Segue link: <a href="https://skyn.com/pt-br/privacy-policy/"
-                        target="_blank">https://skyn.com/pt-br/privacy-policy/</a>
+                    Privacidade de Dados da DOCILE, permitindo que o consumidor tenha acesso integral às informações sobre
+                    o tratamento de seus dados. Segue link: <a href="https://docile.com/pt-br/privacy-policy/"
+                        target="_blank">https://docile.com/pt-br/privacy-policy/</a>
                 </p>
             </div>
 
@@ -65,7 +65,7 @@
         </div>
 
         <div class="footer-product">
-            <img src="/templates/skyn/assets/images/product_footer.png" alt="SKYN ELITE Product">
+            <img src="/templates/docile/assets/images/product_footer.png" alt="DOCILE ELITE Product">
         </div>
     </div>
     <script>
@@ -231,7 +231,7 @@
             // Se tudo estiver correto, redireciona com query params
             const urlParams = new URLSearchParams(window.location.search);
             const queryString = urlParams.toString();
-            const formUrl = queryString ? `/api/skyn/form?${queryString}` : '/api/skyn/form';
+            const formUrl = queryString ? `/api/docile/form?${queryString}` : '/api/docile/form';
             window.location.href = formUrl;
         }
     </script>

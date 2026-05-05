@@ -1,4 +1,4 @@
-# Projeto Usar Data Registration - Backend
+﻿# Projeto Usar Data Registration - Backend
 
 Escopo inicial conforme backlog:
 
@@ -22,8 +22,8 @@ Escopo inicial conforme backlog:
 1. Clone o repositório e entre na pasta:
 
    ```bash
-   git clone git@github.com:DreamBricksOrg/kapo_user_reg.git
-   cd kapo_user_reg
+   git clone git@github.com:DreamBricksOrg/docile_user_reg.git
+   cd docile_user_reg
    ```
 
 2. Crie um virtualenv e instale dependências:
@@ -54,13 +54,13 @@ Escopo inicial conforme backlog:
 ## 🐳 Docker
 
 ```bash
-docker build -t kapo_user_reg .
+docker build -t docile_user_reg .
 docker run -d \
-  --name kapo_reg \
+  --name docile_reg \
   -p 5009:5009 \
   --env-file .env \
   -v "$(pwd)/src/frontend/static":/app/src/frontend/static \
-  kapo_user_reg
+  docile_user_reg
 ```
 
 ---

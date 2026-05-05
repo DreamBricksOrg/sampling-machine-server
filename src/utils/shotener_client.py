@@ -1,4 +1,4 @@
-# utils/shortener_client.py (ou core/shortener_client.py)
+﻿# utils/shortener_client.py (ou core/shortener_client.py)
 
 import time
 import asyncio
@@ -77,7 +77,7 @@ async def create_short_link(
 
         # Monta FORM conforme seu /shorten (name e url obrigatórios; callback_url/slug opcionais)
         form = {
-            "name": (name or f"SKYN session {session_id or ''}").strip(),
+            "name": (name or f"DOCILE session {session_id or ''}").strip(),
             "url": long_url,
         }
         if callback_url:
