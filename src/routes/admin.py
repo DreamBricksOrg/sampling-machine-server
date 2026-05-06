@@ -19,7 +19,7 @@ log = structlog.get_logger()
 bearer = HTTPBearer(auto_error=False)
 router = APIRouter(prefix="/api/admin")
 
-DEFAULT_COLLECTION = "docile_elite"
+DEFAULT_COLLECTION = "machine"
 
 def get_collection(name: str = DEFAULT_COLLECTION):
     return db[name]

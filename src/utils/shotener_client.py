@@ -1,6 +1,4 @@
-﻿# utils/shortener_client.py (ou core/shortener_client.py)
-
-import time
+﻿import time
 import asyncio
 import httpx
 import structlog
@@ -75,7 +73,6 @@ async def create_short_link(
         url = f"{settings.SHORTENER_BASE_URL.rstrip('/')}/admin/shorten"
         headers = {"Authorization": f"Bearer {token}"}
 
-        # Monta FORM conforme seu /shorten (name e url obrigatórios; callback_url/slug opcionais)
         form = {
             "name": (name or f"DOCILE session {session_id or ''}").strip(),
             "url": long_url,

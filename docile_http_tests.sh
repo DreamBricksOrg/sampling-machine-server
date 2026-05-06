@@ -2,7 +2,7 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://localhost:5000}"
-COLLECTION="${COLLECTION:-docile_elite}"
+COLLECTION="${COLLECTION:-machine}"
 
 echo "1) Init QRCode"
 INIT_JSON=$(curl -sS -X POST "$BASE_URL/api/docile/qrcode/init" -H "Content-Type: application/json")
