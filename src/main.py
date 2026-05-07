@@ -1,8 +1,5 @@
-from dns.rdtypes.IN import NSAP_PTR
 import os
-import structlog
 from pathlib import Path
-import sys
 import asyncio
 from contextlib import asynccontextmanager
 
@@ -11,24 +8,19 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from sentry_sdk import init as sentry_init
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
-
-from core.db import init_db
-from core.exceptions import AppError
-from core.config import settings
+from infrastructure.database.mongo import init_db
+from shared.exceptions import AppError
+from infrastructure.config import settings
 
 import logging
 import structlog
 from logcenter_sdk.config import LogCenterConfig
 from logcenter_sdk.sender import LogCenterSender
-from logcenter_sdk.middleware import LogCenterAuditMiddleware
-
-from routes.api import router as api_router
-from routes.registrations import router as reg_router
-from routes.auth import router as auth_router
-from routes.admin import router as admin_router
-from routes.machine import router as machine_router
+from domains.pages.routes import router as pages_router
+from domains.users.routes import router as users_router
+from domains.auth.routes import router as auth_router
+from domains.admin.routes import router as admin_router
+from domains.machine.routes import router as machine_router
 
 from middlewares.replay_guard import ReplayGuardMiddleware
 
@@ -126,8 +118,8 @@ def create_app() -> FastAPI:
     app.mount("/static", StaticFiles(directory="src/static"), name="static")
 
 
-    app.include_router(api_router)
-    app.include_router(reg_router)
+    app.include_router(pages_router)
+    app.include_router(users_router)
     app.include_router(auth_router)
     app.include_router(admin_router)
     app.include_router(machine_router)

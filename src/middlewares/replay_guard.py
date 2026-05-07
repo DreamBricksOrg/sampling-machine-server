@@ -2,7 +2,6 @@
 import time
 import hashlib
 import structlog
-from typing import Callable, Awaitable
 from starlette.types import ASGIApp, Receive, Scope, Send
 from starlette.responses import JSONResponse
 from starlette.requests import Request
