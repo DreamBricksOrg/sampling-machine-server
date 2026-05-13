@@ -17,7 +17,7 @@ import structlog
 from logcenter_sdk.config import LogCenterConfig
 from logcenter_sdk.sender import LogCenterSender
 from domains.pages.routes import router as pages_router
-from domains.users.routes import router as users_router
+from domains.users.routes import router as users_router, session_router
 from domains.auth.routes import router as auth_router
 from domains.admin.routes import router as admin_router
 from domains.machine.routes import router as machine_router
@@ -120,6 +120,7 @@ def create_app() -> FastAPI:
 
     app.include_router(pages_router)
     app.include_router(users_router)
+    app.include_router(session_router)
     app.include_router(auth_router)
     app.include_router(admin_router)
     app.include_router(machine_router)

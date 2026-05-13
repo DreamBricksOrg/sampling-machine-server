@@ -53,6 +53,9 @@ class Settings(BaseSettings):
     SMS_API_KEY: Optional[str] = Field(default=None, env='SMS_API_KEY')
     SMS_TIMEOUT_SECONDS: int = Field(default=10, env="SMS_TIMEOUT_SECONDS")
 
+    #MACHINE
+    DROP_CODE: str = Field(..., env="DROP_CODE")
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

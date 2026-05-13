@@ -1,9 +1,39 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, AnyUrl, HttpUrl
 from typing import Optional, Literal
 from datetime import datetime
 
 
 Status = Literal["registered", "picked"]
+
+
+# ---------- Session ----------
+class SessionCompleteRequest(BaseModel):
+    session_id: str
+    slug: str
+
+
+class SessionCompleteResponse(BaseModel):
+    status: str
+    session_id: str
+
+
+class QRCodeInitResponse(BaseModel):
+    session_id: str
+    short_url: HttpUrl
+    slug: str
+    qr_png: HttpUrl
+    qr_svg: HttpUrl
+
+
+class SessionGetResponse(BaseModel):
+    session_id: str
+    slug: str
+    status: Literal["pending", "form_shown", "processing", "completed", "failed", "aborted"]
+    short_url: Optional[AnyUrl] = None
+    created_at: datetime
+    form_opened_at: Optional[datetime] = None
+    processing_started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
 
 
 # ---------- Requests ----------
@@ -22,7 +52,7 @@ class UserPickupRequest(BaseModel):
     id: Optional[str] = None
     email: Optional[EmailStr] = None
     day: datetime = Field(..., description="Dia da retirada")
-    condomsPicked: int = Field(..., ge=1, description="Quantidade retirada nesse dia")
+    productsPicked: int = Field(..., ge=1, description="Quantidade retirada nesse dia")
 
 
 # ---------- Responses ----------
@@ -43,11 +73,11 @@ class UserGetResponse(BaseModel):
     registerDay: datetime
     canPickFrom: datetime
     pickedDay: Optional[datetime] = None
-    condomsPicked: int = 0
+    productsPicked: int = 0
 
 class UserPickupResponse(BaseModel):
     id: str
     email: EmailStr
     pickedDay: datetime
-    condomsPicked: int
+    productsPicked: int
     status: Status  # deve vir "picked"

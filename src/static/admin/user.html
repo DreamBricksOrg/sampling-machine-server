@@ -53,8 +53,8 @@
             <input class="input" id="pickedDay" name="pickedDay" type="date" required />
           </div>
           <div>
-            <label for="condomsPicked">Quantos preservativos? <span class="req">*</span></label>
-            <input class="input" id="condomsPicked" name="condomsPicked" type="number" inputmode="numeric" min="1" step="1" placeholder="ex.: 1" value="1" required />
+            <label for="productsPicked">Quantos preservativos? <span class="req">*</span></label>
+            <input class="input" id="productsPicked" name="productsPicked" type="number" inputmode="numeric" min="1" step="1" placeholder="ex.: 1" value="1" required />
           </div>
         </div>
 
@@ -93,7 +93,7 @@
       const today = todayISO();
       if (!regInput.value) regInput.value = today;
       if (!pickInput.value) pickInput.value = today;
-      document.getElementById('condomsPicked').value = 1; 
+      document.getElementById('productsPicked').value = 1; 
     }
 
     window.addEventListener('DOMContentLoaded', setDefaults);
@@ -121,7 +121,7 @@
     }
 
     async function tryPickup({ id, email, day, qty }) {
-      const body = { day, condomsPicked: Number(qty) || 0 };
+      const body = { day, productsPicked: Number(qty) || 0 };
       if (id) body.id = id; else body.email = email;
 
       const res = await fetch(`/api/users/pickup?collection=${COLLECTION}`, {
@@ -162,7 +162,7 @@
       };
 
       const pickedDay = pickInput.value;
-      const condomsPicked = f.condomsPicked.value.trim();
+      const productsPicked = f.productsPicked.value.trim();
 
       try {
         // 1) cadastro
@@ -186,7 +186,7 @@
           id: createId,
           email: regPayload.email,
           day: pickedDay,
-          qty: condomsPicked
+          qty: productsPicked
         });
 
         if (!pickupRes.ok) {
@@ -195,7 +195,7 @@
         }
 
         const p = pickupRes.data || {};
-        out.textContent += `Retirada OK!\nDia: ${p.pickedDay}\nQuantidade: ${p.condomsPicked}\n`;
+        out.textContent += `Retirada OK!\nDia: ${p.pickedDay}\nQuantidade: ${p.productsPicked}\n`;
 
         form.reset();
         setTimeout(setDefaults, 0);

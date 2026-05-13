@@ -1,9 +1,17 @@
+from pathlib import Path
 from typing import List
 
-from fastapi import APIRouter, Body, Query
+from fastapi import APIRouter, Body, HTTPException, Query, Request
 from pydantic import EmailStr
+from starlette.responses import HTMLResponse
+from starlette.templating import Jinja2Templates
 
+from integrations.logcenter.log_sender import LogSender
 from .schemas import (
+    QRCodeInitResponse,
+    SessionCompleteRequest,
+    SessionCompleteResponse,
+    SessionGetResponse,
     UserGetResponse,
     UserInitRequest,
     UserInitResponse,
@@ -12,9 +20,13 @@ from .schemas import (
     UserUpdateRequest,
 )
 from .repositories import DEFAULT_COLLECTION
-from .services import UserService
+from .services import SessionService, UserService
+
+_BASE_DIR = Path(__file__).resolve().parents[2]
+templates = Jinja2Templates(directory=str(_BASE_DIR / "static" / "docile" / "html"))
 
 router = APIRouter(prefix="/api/users")
+session_router = APIRouter(prefix="/api/docile")
 
 
 def service_for(collection: str) -> UserService:
@@ -59,3 +71,67 @@ async def register_pickup(payload: UserPickupRequest = Body(...), collection: st
 @router.post("/eligibility/refresh")
 async def refresh_eligibility(collection: str = Query(DEFAULT_COLLECTION)):
     return await service_for(collection).refresh_eligibility()
+
+
+
+@session_router.post("/session/complete", response_model=SessionCompleteResponse)
+async def complete_session(payload: SessionCompleteRequest):
+    return await SessionService().complete_session(payload)
+
+
+@session_router.post("/qrcode/init", response_model=QRCodeInitResponse)
+async def init_qrcode():
+    return await SessionService().init_qrcode()
+
+
+@session_router.get("/session/{sid}", response_model=SessionGetResponse)
+async def get_session_info(sid: str):
+    return await SessionService().get_session_info(sid)
+
+
+@session_router.get("/claim", response_class=HTMLResponse)
+async def html_claim(request: Request):
+    return _render_logged_page(request, "claim.html", "claim_page_accessed", "claim")
+
+
+@session_router.get("/cta", response_class=HTMLResponse)
+async def html_thanks(request: Request):
+    return _render_logged_page(request, "cta.html", "cta_page_accessed", "cta")
+
+
+@session_router.get("/form", response_class=HTMLResponse)
+async def html_form(request: Request):
+    import structlog
+    log = structlog.get_logger()
+    sid = request.query_params.get("sid")
+    if not sid:
+        raise HTTPException(400, "sid ausente")
+    try:
+        template_name = await SessionService().open_form(sid)
+        return templates.TemplateResponse(template_name, {"request": request})
+    except HTTPException:
+        raise
+    except Exception as exc:
+        log.error("html-render-failed", error=str(exc), page="form")
+        return templates.TemplateResponse("error.html", {"request": request})
+
+
+@session_router.get("/terms", response_class=HTMLResponse)
+async def html_terms(request: Request):
+    return _render_logged_page(request, "terms.html", "terms_page_accessed", "terms")
+
+
+@session_router.get("/admin/inventory", response_class=HTMLResponse)
+async def html_admin(request: Request):
+    return _render_logged_page(request, "admin.html", "admin_page_accessed", "admin")
+
+
+def _render_logged_page(request: Request, template_name: str, event: str, page: str):
+    import structlog
+    log = structlog.get_logger()
+    try:
+        LogSender().log(event)
+        return templates.TemplateResponse(template_name, {"request": request})
+    except Exception as exc:
+        log.error("html-render-failed", error=str(exc), page=page)
+        return templates.TemplateResponse("error.html", {"request": request})

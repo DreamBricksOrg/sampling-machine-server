@@ -3,6 +3,43 @@ from pymongo import ReadPreference, ReturnDocument
 from infrastructure.database.mongo import db
 
 DEFAULT_COLLECTION = "machine"
+SESSIONS_COLLECTION = "docile_sessions"
+
+
+class SessionRepository:
+    def __init__(self):
+        self.collection = db[SESSIONS_COLLECTION]
+
+    async def create(self, doc: dict) -> None:
+        await self.collection.insert_one(doc)
+
+    async def find(self, session_id: str) -> dict | None:
+        return await self.collection.find_one({"_id": session_id})
+
+    async def try_mark_form_opened(self, session_id: str, now):
+        return await self.collection.find_one_and_update(
+            {"_id": session_id, "status": "pending", "retire_sent": {"$ne": True}},
+            {"$set": {"retire_sent": True, "status": "form_shown", "form_opened_at": now}},
+            return_document=ReturnDocument.AFTER,
+        )
+
+    async def try_start_processing(self, session_id: str, slug: str, now):
+        return await self.collection.find_one_and_update(
+            {
+                "_id": session_id,
+                "slug": slug,
+                "status": {"$in": ["pending", "form_shown"]},
+                "processing": {"$ne": True},
+            },
+            {"$set": {"processing": True, "status": "processing", "processing_started_at": now}},
+            return_document=ReturnDocument.AFTER,
+        )
+
+    async def finalize(self, session_id: str, status: str, now) -> None:
+        await self.collection.update_one(
+            {"_id": session_id},
+            {"$set": {"status": status, "processing": False, "completed_at": now}},
+        )
 
 
 class UserRepository:
@@ -51,7 +88,7 @@ class UserRepository:
                 "$or": [{"pickedDay": {"$exists": False}}, {"pickedDay": {"$ne": day_dt}}],
             },
             {
-                "$inc": {"condomsPicked": qty},
+                "$inc": {"productsPicked": qty},
                 "$set": {
                     "pickedDay": day_dt,
                     "status": "picked",

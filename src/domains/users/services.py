@@ -6,7 +6,15 @@ from fastapi import HTTPException
 from pydantic import EmailStr
 from pymongo.errors import DuplicateKeyError
 
+from infrastructure.config import settings
+from integrations.logcenter.log_sender import LogSender
+from integrations.shortener.client import create_short_link
+from infrastructure.hardware.udp_sender import UDPSender
 from .schemas import (
+    QRCodeInitResponse,
+    SessionCompleteRequest,
+    SessionCompleteResponse,
+    SessionGetResponse,
     UserGetResponse,
     UserInitRequest,
     UserInitResponse,
@@ -14,13 +22,118 @@ from .schemas import (
     UserPickupResponse,
     UserUpdateRequest,
 )
-from .repositories import DEFAULT_COLLECTION, UserRepository
+from .repositories import DEFAULT_COLLECTION, SessionRepository, UserRepository
 
 log = structlog.get_logger()
+_udp_sender: UDPSender | None = None
 
 
 def now_utc() -> datetime:
     return datetime.now(timezone.utc)
+
+
+def get_udp_sender() -> UDPSender:
+    global _udp_sender
+    if _udp_sender is None:
+        _udp_sender = UDPSender(port=settings.UDP_PORT)
+    return _udp_sender
+
+
+class SessionService:
+    def __init__(self, session_repository: SessionRepository | None = None):
+        self.sessions = session_repository or SessionRepository()
+
+    async def init_qrcode(self) -> QRCodeInitResponse:
+        session_id = str(uuid.uuid4())
+        long_url = f"{settings.CADASTRO_BASE_URL}?sid={session_id}"
+        try:
+            shortener_data, short_url = await create_short_link(long_url, session_id=session_id)
+        except Exception as exc:
+            log.error("qrcode-init-failed", error=str(exc))
+            raise HTTPException(500, "Falha ao gerar QR/link no encurtador")
+
+        doc = {
+            "_id": session_id,
+            "slug": shortener_data.slug,
+            "short_url": short_url,
+            "status": "pending",
+            "retire_sent": False,
+            "processing": False,
+            "created_at": now_utc(),
+            "form_opened_at": None,
+            "processing_started_at": None,
+            "completed_at": None,
+        }
+        await self.sessions.create(doc)
+        log.info("docile-session-created", session_id=session_id, short_url=short_url)
+        return QRCodeInitResponse(
+            session_id=session_id,
+            short_url=short_url,
+            slug=shortener_data.slug,
+            qr_png=shortener_data.qr_png,
+            qr_svg=shortener_data.qr_svg,
+        )
+
+    async def get_session_info(self, sid: str) -> SessionGetResponse:
+        session = await self.sessions.find(sid)
+        if not session:
+            raise HTTPException(status_code=404, detail="Sessão inválida ou expirada")
+        return SessionGetResponse(
+            session_id=session["_id"],
+            slug=session["slug"],
+            status=session["status"],
+            short_url=session.get("short_url"),
+            created_at=session.get("created_at"),
+            form_opened_at=session.get("form_opened_at"),
+            processing_started_at=session.get("processing_started_at"),
+            completed_at=session.get("completed_at"),
+        )
+
+    async def complete_session(self, req: SessionCompleteRequest) -> SessionCompleteResponse:
+        from domains.machine.services import MachineService
+
+        doc = await self.sessions.try_start_processing(req.session_id, req.slug, now_utc())
+        if not doc:
+            session = await self.sessions.find(req.session_id)
+            if not session:
+                raise HTTPException(404, "Sessão inválida ou expirada")
+            if session.get("slug") != req.slug:
+                raise HTTPException(400, "Slug não corresponde à sessão")
+            raise HTTPException(409, "Sessão já encerrada ou em processamento")
+
+        status_final = "failed"
+        try:
+            LogSender().log("session_complete")
+            status_final = await MachineService().drop_waiting_callback(slug=req.slug)
+            return SessionCompleteResponse(status="ok", session_id=req.session_id)
+        except HTTPException:
+            raise
+        except Exception as exc:
+            log.error("session-complete-error", error=str(exc), session_id=req.session_id, slug=req.slug)
+            raise HTTPException(500, "Erro interno do servidor")
+        finally:
+            await self.sessions.finalize(req.session_id, status_final, now_utc())
+            log.info("session-finalized", session_id=req.session_id, status=status_final)
+
+    async def open_form(self, sid: str) -> str:
+        session = await self.sessions.find(sid)
+        if not session:
+            log.error("html-session-expired", page="form")
+            return "error.html"
+        if session["status"] != "pending":
+            log.error("html-session-used", page="form")
+            raise HTTPException(404, "Sessão Inválida.")
+
+        updated = await self.sessions.try_mark_form_opened(sid, now_utc())
+        if updated:
+            log.info("form-opened-first-time", session_id=sid)
+            LogSender().log("form_page_accessed")
+            get_udp_sender().send("retire")
+            return "form.html"
+
+        session = await self.sessions.find(sid)
+        LogSender().log("form_used_or_invalid", status=session.get("status") if session else None)
+        return "used.html"
 
 
 def start_of_day_utc(value) -> datetime:
@@ -48,7 +161,7 @@ def user_response(doc: dict) -> UserGetResponse:
         registerDay=doc["registerDay"],
         canPickFrom=doc["canPickFrom"],
         pickedDay=doc.get("pickedDay"),
-        condomsPicked=doc.get("condomsPicked", 0),
+        productsPicked=doc.get("productsPicked", 0),
     )
 
 
@@ -81,7 +194,7 @@ class UserService:
             "createdAt": today,
             "updatedAt": today,
             "pickedDay": None,
-            "condomsPicked": 0,
+            "productsPicked": 0,
         }
 
         try:
@@ -155,7 +268,7 @@ class UserService:
         can_pick_from_dt = start_of_day_utc(user.get("canPickFrom") or day_dt)
         prev_pick = user.get("pickedDay")
         prev_picked_dt = start_of_day_utc(prev_pick) if prev_pick else None
-        is_first_pick = prev_picked_dt is None and int(user.get("condomsPicked", 0)) == 0
+        is_first_pick = prev_picked_dt is None and int(user.get("productsPicked", 0)) == 0
 
         if not is_first_pick and day_dt.date() < can_pick_from_dt.date():
             raise HTTPException(
@@ -169,7 +282,7 @@ class UserService:
         modified = await self.repository.register_pickup(
             query,
             day_dt,
-            int(payload.condomsPicked),
+            int(payload.productsPicked),
             next_can_pick_dt,
             now_utc(),
         )
@@ -181,7 +294,7 @@ class UserService:
             "user-picked",
             id=updated["_id"],
             day=str(day_dt.date()),
-            qty=int(updated.get("condomsPicked", 0)),
+            qty=int(updated.get("productsPicked", 0)),
             next_can_pick=str(next_can_pick_dt.date()),
             collection=self.repository.collection_name,
         )
@@ -189,7 +302,7 @@ class UserService:
             id=updated["_id"],
             email=updated["email"],
             pickedDay=day_dt,
-            condomsPicked=int(updated.get("condomsPicked", 0)),
+            productsPicked=int(updated.get("productsPicked", 0)),
             status=updated.get("status", "picked"),
         )
 
