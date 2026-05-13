@@ -16,11 +16,13 @@ import logging
 import structlog
 from logcenter_sdk.config import LogCenterConfig
 from logcenter_sdk.sender import LogCenterSender
-from domains.pages.routes import router as pages_router
-from domains.users.routes import router as users_router, session_router
-from domains.auth.routes import router as auth_router
-from domains.admin.routes import router as admin_router
 from domains.machine.routes import router as machine_router
+
+if settings.USE_FORM:
+    from domains.pages.routes import router as pages_router
+    from domains.users.routes import router as users_router, session_router
+    from domains.auth.routes import router as auth_router
+    from domains.admin.routes import router as admin_router
 
 from middlewares.replay_guard import ReplayGuardMiddleware
 
@@ -67,7 +69,8 @@ except Exception:
 async def lifespan(app: FastAPI):
     app.state.log_sender = sender
 
-    await init_db()
+    if settings.USE_FORM:
+        await init_db()
 
     async def _delayed_startup_log():
         await asyncio.sleep(0.3)
@@ -118,11 +121,12 @@ def create_app() -> FastAPI:
     app.mount("/static", StaticFiles(directory="src/static"), name="static")
 
 
-    app.include_router(pages_router)
-    app.include_router(users_router)
-    app.include_router(session_router)
-    app.include_router(auth_router)
-    app.include_router(admin_router)
+    if settings.USE_FORM:
+        app.include_router(pages_router)
+        app.include_router(users_router)
+        app.include_router(session_router)
+        app.include_router(auth_router)
+        app.include_router(admin_router)
     app.include_router(machine_router)
 
     @app.exception_handler(AppError)

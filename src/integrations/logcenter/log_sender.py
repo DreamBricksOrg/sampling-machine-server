@@ -28,6 +28,7 @@ class LogSender(metaclass=Singleton):
 
     @staticmethod
     def _init_csv(filename):
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
         try:
             with open(filename, mode='x', newline='') as f:
                 writer = csv.writer(f)

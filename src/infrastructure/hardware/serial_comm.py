@@ -12,7 +12,7 @@ class SerialComm(metaclass=Singleton):
 
     def send(self, msg):
         self.semaphore.acquire()
-        self.ser.write(msg.encode())
+        self.ser.write((msg + '\n').encode())
         self.semaphore.release()
 
     def receive(self):

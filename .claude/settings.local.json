@@ -4,7 +4,18 @@
       "mcp__plugin_context-mode_context-mode__ctx_batch_execute",
       "Bash(xargs grep -l -i 'skyn\\\\|kapo')",
       "Bash(xargs sed -i 's/SKYN/DOCILE/g; s/Skyn/Docile/g; s/skyn/docile/g; s/KAPO/DOCILE/g; s/Kapo/Docile/g; s/kapo/docile/g')",
-      "Bash(git mv *)"
+      "Bash(git mv *)",
+      "Bash(python -m uvicorn src.main:app --reload)",
+      "Bash(python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000)",
+      "Bash(PYTHONPATH=src python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000)",
+      "PowerShell($env:PYTHONPATH = \"src\"; python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000 2>&1 | Select-Object -First 30)",
+      "PowerShell($env:PYTHONPATH = \"src\"; python -m uvicorn src.main:app --host 0.0.0.0 --port 8000 2>&1 | Select-Object -First 20)",
+      "PowerShell($env:PYTHONPATH = \"C:\\\\Users\\\\db\\\\Documents\\\\db\\\\prj\\\\docile-sampling-machine\\\\docile-sampling-machine-server\\\\src\"; python -m uvicorn src.main:app --host 0.0.0.0 --port 8000 2>&1 | Select-Object -First 25)",
+      "PowerShell(uvicorn src.main:create_app *)",
+      "PowerShell($env:USE_FORM)",
+      "PowerShell([System.Environment]::GetEnvironmentVariable\\(\"USE_FORM\", \"User\"\\); [System.Environment]::GetEnvironmentVariable\\(\"USE_FORM\", \"Machine\"\\))",
+      "PowerShell(Get-NetTCPConnection *)",
+      "PowerShell(Stop-Process *)"
     ]
   }
 }
