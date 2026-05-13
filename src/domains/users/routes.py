@@ -23,10 +23,10 @@ from .repositories import DEFAULT_COLLECTION
 from .services import SessionService, UserService
 
 _BASE_DIR = Path(__file__).resolve().parents[2]
-templates = Jinja2Templates(directory=str(_BASE_DIR / "static" / "docile" / "html"))
+templates = Jinja2Templates(directory=str(_BASE_DIR / "static" / "sample" / "html"))
 
 router = APIRouter(prefix="/api/users")
-session_router = APIRouter(prefix="/api/docile")
+session_router = APIRouter(prefix="/api/sample")
 
 
 def service_for(collection: str) -> UserService:
@@ -93,9 +93,9 @@ async def html_claim(request: Request):
     return _render_logged_page(request, "claim.html", "claim_page_accessed", "claim")
 
 
-@session_router.get("/cta", response_class=HTMLResponse)
-async def html_thanks(request: Request):
-    return _render_logged_page(request, "cta.html", "cta_page_accessed", "cta")
+@session_router.get("/welcome", response_class=HTMLResponse)
+async def html_welcome(request: Request):
+    return _render_logged_page(request, "welcome.html", "welcome_page_accessed", "welcome")
 
 
 @session_router.get("/form", response_class=HTMLResponse)

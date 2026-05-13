@@ -65,7 +65,7 @@ async def delete_user(user_id: str = Path(..., description="ID do Usuário a ser
     await service_for(collection).delete_user(user_id)
 
 
-@router.get("/inventory", response_class=HTMLResponse)
+@router.get("/inventory", response_class=HTMLResponse, dependencies=[Depends(admin_required)])
 async def html_admin_inventory(request: Request):
     try:
         LogSender().log("admin_page_accessed")

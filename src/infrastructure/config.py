@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     SHORTENER_PASSWORD: str = Field(...,env="SHORTENER_PASSWORD")
     
     # Cadastro
-    CADASTRO_BASE_URL: str = Field("https://samplemachine.ngrok.app/api/docile/cta", env="CADASTRO_BASE_URL")
+    CADASTRO_BASE_URL: str = Field("https://samplemachine.ngrok.app/api/sample/welcome", env="CADASTRO_BASE_URL")
     
     # Serial
     SERIAL_PORT: str = Field("COM3", env="SERIAL_PORT")

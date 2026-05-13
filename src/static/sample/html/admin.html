@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/templates/docile/css/docile-root.css">
-    <title>DOCILE - Admin</title>
+    <link rel="stylesheet" href="/templates/sample/css/sample-root.css">
+    <title>Sample Machine - Admin</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
@@ -166,10 +166,6 @@
 
 <body>
     <div class="container">
-        <div class="header">
-            <img src="/templates/docile/assets/images/docile_logo.png" alt="DOCILE Logo">
-        </div>
-
         <div class="admin-content">
             <h2>ADMINISTRAÇÃO</h2>
 
@@ -215,7 +211,7 @@
         // Função para carregar dados do inventário
         async function loadInventory() {
             try {
-                const response = await fetch('/templates/docile/assets/inventory.json');
+                const response = await fetch('/templates/sample/assets/inventory.json');
                 if (response.ok) {
                     const data = await response.json();
                     // Garante que todos os campos necessários existam
@@ -305,8 +301,8 @@
             dispenseButton.disabled = true;
 
             try {
-                console.log('DEBUG: Making fetch request to /api/docile/admin/dispense');
-                const response = await fetch('/api/docile/admin/dispense', {
+                console.log('DEBUG: Making fetch request to /api/sample/admin/dispense');
+                const response = await fetch('/api/sample/admin/dispense', {
                     method: 'POST'
                 });
 
@@ -384,7 +380,7 @@
             };
 
             try {
-                const response = await fetch('/api/docile/admin/inventory', {
+                const response = await fetch('/api/sample/admin/inventory', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Machine - Retire sua Amostra</title>
+    <link rel="stylesheet" href="/templates/sample/css/sample-root.css">
+    <link rel="stylesheet" href="/templates/sample/css/claim.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="text-content">
+            <p>RETIRE SUA</p>
+            <p>AMOSTRA</p>
+            <p>NO TOTEM AO LADO</p>
+        </div>
+
+    </div>
+
+    <script>
+        async function completeSession() {
+            const sessionId = localStorage.getItem('session_id');
+            const slug = localStorage.getItem('slug');
+            if (!sessionId || !slug) return;
+
+            try {
+                await fetch('/api/sample/session/complete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId, slug }),
+                });
+            } catch (_) {}
+        }
+
+        document.addEventListener('DOMContentLoaded', completeSession);
+    </script>
+</body>
+
+</html>

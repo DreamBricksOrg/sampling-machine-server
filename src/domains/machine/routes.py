@@ -7,7 +7,7 @@ from .schemas import DropRequest
 from .services import InventoryService, MachineService
 
 log = structlog.get_logger()
-router = APIRouter(prefix="/api/docile")
+router = APIRouter(prefix="/api/sample")
 
 
 def _verify_drop_code(drop_code: str) -> None:

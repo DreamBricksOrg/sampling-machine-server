@@ -3,7 +3,7 @@ from pymongo import ReadPreference, ReturnDocument
 from infrastructure.database.mongo import db
 
 DEFAULT_COLLECTION = "machine"
-SESSIONS_COLLECTION = "docile_sessions"
+SESSIONS_COLLECTION = "sample_sessions"
 
 
 class SessionRepository:
@@ -28,7 +28,7 @@ class SessionRepository:
             {
                 "_id": session_id,
                 "slug": slug,
-                "status": {"$in": ["pending", "form_shown"]},
+                "status": "form_shown",
                 "processing": {"$ne": True},
             },
             {"$set": {"processing": True, "status": "processing", "processing_started_at": now}},

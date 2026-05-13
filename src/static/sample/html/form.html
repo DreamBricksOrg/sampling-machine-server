@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Machine - Cadastro</title>
+    <link rel="stylesheet" href="/templates/sample/css/sample-root.css">
+    <link rel="stylesheet" href="/templates/sample/css/form.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="content">
+
+            <div class="title">
+                <p>PREENCHA OS CAMPOS ABAIXO</p>
+                <p>E RETIRE SUA AMOSTRA</p>
+            </div>
+
+            <form id="formulario">
+                <div class="form-content">
+                    <label for="nome" class="form-label">NOME COMPLETO</label>
+                    <input type="text" id="nome" name="nome" class="form-input" autocomplete="off" required>
+                    <div id="nome-erro" class="form-error" style="display:none;"></div>
+
+                    <label for="email" class="form-label">E-MAIL</label>
+                    <input type="email" id="email" name="email" class="form-input" autocomplete="off" required>
+                    <div id="email-erro" class="form-error" style="display:none;"></div>
+                </div>
+                <div class="button-container">
+                    <button class="btn" id="btn-enviar" type="submit" disabled>ENVIAR</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        const COLLECTION = 'machine';
+
+        function getUrlParameter(name) {
+            return new URLSearchParams(window.location.search).get(name);
+        }
+
+        function saveSessionData() {
+            const sessionId = getUrlParameter('sid');
+            const slug = getUrlParameter('slug');
+            if (sessionId && !localStorage.getItem('session_id')) {
+                localStorage.setItem('session_id', sessionId);
+            }
+            if (slug && !localStorage.getItem('slug')) {
+                localStorage.setItem('slug', slug);
+            }
+        }
+
+        function validarEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validarNome(nome) {
+            return nome.trim().length > 0 && nome.trim().split(' ').length >= 2;
+        }
+
+        const nomeInput = document.getElementById('nome');
+        const emailInput = document.getElementById('email');
+        const btnEnviar = document.getElementById('btn-enviar');
+        const nomeErro = document.getElementById('nome-erro');
+        const emailErro = document.getElementById('email-erro');
+
+        function validarCampos() {
+            const nomeValido = validarNome(nomeInput.value);
+            const emailValido = validarEmail(emailInput.value);
+
+            if (!nomeValido && nomeInput.value.trim() !== '') {
+                nomeErro.textContent = 'Por favor, informe o nome completo.';
+                nomeErro.style.display = 'block';
+                nomeInput.classList.add('invalid');
+            } else {
+                nomeErro.textContent = '';
+                nomeErro.style.display = 'none';
+                nomeInput.classList.remove('invalid');
+            }
+
+            if (!emailValido && emailInput.value.trim() !== '') {
+                emailErro.textContent = 'E-mail inválido.';
+                emailErro.style.display = 'block';
+                emailInput.classList.add('invalid');
+            } else {
+                emailErro.textContent = '';
+                emailErro.style.display = 'none';
+                emailInput.classList.remove('invalid');
+            }
+
+            btnEnviar.disabled = !(nomeValido && emailValido);
+        }
+
+        nomeInput.addEventListener('input', validarCampos);
+        emailInput.addEventListener('input', validarCampos);
+
+        async function tryCreateUser(payload) {
+            const res = await fetch(`/api/users/?collection=${COLLECTION}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const data = await res.json().catch(() => ({}));
+            return { ok: res.ok, status: res.status, data };
+        }
+
+        async function tryRegisterPickup(email) {
+            const today = new Date().toISOString().split('T')[0];
+            const res = await fetch(`/api/users/pickup/?collection=${COLLECTION}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, day: today, productsPicked: 1 }),
+            });
+            const data = await res.json().catch(() => ({}));
+            return { ok: res.ok, status: res.status, data };
+        }
+
+        function redirectToClaim() {
+            const queryString = new URLSearchParams(window.location.search).toString();
+            window.location.href = queryString
+                ? `/api/sample/claim?${queryString}`
+                : '/api/sample/claim';
+        }
+
+        document.getElementById('formulario').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            validarCampos();
+            if (btnEnviar.disabled) return;
+
+            const sessionId = localStorage.getItem('session_id') || '';
+            const payload = {
+                name: nomeInput.value.trim(),
+                email: emailInput.value.trim(),
+                code: sessionId,
+            };
+
+            try {
+                const res = await tryCreateUser(payload);
+
+                if (res.ok || res.status === 409) {
+                    await tryRegisterPickup(payload.email);
+                    redirectToClaim();
+                } else {
+                    const msg = (res.data && (res.data.detail || res.data.message)) || 'Erro ao cadastrar';
+                    await Swal.fire({ icon: 'error', title: 'Erro', text: msg, confirmButtonText: 'OK' });
+                }
+            } catch (_) {
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Ocorreu um erro inesperado. Tente novamente.',
+                    confirmButtonText: 'OK',
+                });
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', saveSessionData);
+    </script>
+</body>
+
+</html>

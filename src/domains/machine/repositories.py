@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-INVENTORY_FILE = BASE_DIR / "static" / "docile" / "assets" / "inventory.json"
+INVENTORY_FILE = BASE_DIR / "static" / "sample" / "assets" / "inventory.json"
 
 
 class InventoryRepository:

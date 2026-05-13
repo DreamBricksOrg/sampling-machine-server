@@ -65,7 +65,7 @@ class SessionService:
             "completed_at": None,
         }
         await self.sessions.create(doc)
-        log.info("docile-session-created", session_id=session_id, short_url=short_url)
+        log.info("sample-session-created", session_id=session_id, short_url=short_url)
         return QRCodeInitResponse(
             session_id=session_id,
             short_url=short_url,
@@ -120,15 +120,15 @@ class SessionService:
         if not session:
             log.error("html-session-expired", page="form")
             return "error.html"
-        if session["status"] != "pending":
-            log.error("html-session-used", page="form")
+        if session["status"] in ("processing", "completed", "failed", "aborted"):
+            log.error("html-session-used", page="form", status=session["status"])
             raise HTTPException(404, "Sessão Inválida.")
 
         updated = await self.sessions.try_mark_form_opened(sid, now_utc())
         if updated:
             log.info("form-opened-first-time", session_id=sid)
             LogSender().log("form_page_accessed")
-            get_udp_sender().send("retire")
+            get_udp_sender().send("next")
             return "form.html"
 
         session = await self.sessions.find(sid)

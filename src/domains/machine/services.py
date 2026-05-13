@@ -96,9 +96,9 @@ class MachineService:
 
     async def drop_waiting_callback(self, slug: str = "") -> str:
         log_sender = LogSender()
+        udp_sender = get_udp_sender()
         async with serial_lock:
             serial_comm = get_serial_comm()
-            udp_sender = get_udp_sender()
             serial_comm.send("drop")
             start = time.time()
             while time.time() - start < 20:
