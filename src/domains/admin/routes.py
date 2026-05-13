@@ -1,14 +1,23 @@
 from datetime import date
+from pathlib import Path as FilePath
 from typing import Any
 
-from fastapi import APIRouter, Depends, Path, Query, status
+import structlog
+from fastapi import APIRouter, Depends, Path, Query, Request, status
 from fastapi.responses import StreamingResponse
+from starlette.responses import HTMLResponse
+from starlette.templating import Jinja2Templates
 
+from integrations.logcenter.log_sender import LogSender
 from .repositories import DEFAULT_COLLECTION
 from .security import admin_required
 from .services import AdminUserService
 
+log = structlog.get_logger()
 router = APIRouter(prefix="/api/admin")
+
+_BASE_DIR = FilePath(__file__).resolve().parents[2]
+templates = Jinja2Templates(directory=str(_BASE_DIR / "static" / "admin"))
 
 
 def service_for(collection: str) -> AdminUserService:
@@ -54,3 +63,13 @@ async def get_user(user_id: str = Path(..., title="ID do Usuário"), collection:
 @router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(admin_required)])
 async def delete_user(user_id: str = Path(..., description="ID do Usuário a ser excluído"), collection: str = Query(DEFAULT_COLLECTION)):
     await service_for(collection).delete_user(user_id)
+
+
+@router.get("/inventory", response_class=HTMLResponse)
+async def html_admin_inventory(request: Request):
+    try:
+        LogSender().log("admin_page_accessed")
+        return templates.TemplateResponse("admin.html", {"request": request})
+    except Exception as exc:
+        log.error("html-render-failed", error=str(exc), page="admin")
+        return templates.TemplateResponse("error.html", {"request": request})

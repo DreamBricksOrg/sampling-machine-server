@@ -73,7 +73,6 @@ async def refresh_eligibility(collection: str = Query(DEFAULT_COLLECTION)):
     return await service_for(collection).refresh_eligibility()
 
 
-
 @session_router.post("/session/complete", response_model=SessionCompleteResponse)
 async def complete_session(payload: SessionCompleteRequest):
     return await SessionService().complete_session(payload)
@@ -120,10 +119,6 @@ async def html_form(request: Request):
 async def html_terms(request: Request):
     return _render_logged_page(request, "terms.html", "terms_page_accessed", "terms")
 
-
-@session_router.get("/admin/inventory", response_class=HTMLResponse)
-async def html_admin(request: Request):
-    return _render_logged_page(request, "admin.html", "admin_page_accessed", "admin")
 
 
 def _render_logged_page(request: Request, template_name: str, event: str, page: str):

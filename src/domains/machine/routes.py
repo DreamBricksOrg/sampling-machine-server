@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 
 from infrastructure.config import settings
 from integrations.logcenter.log_sender import LogSender
+from .schemas import DropRequest
 from .services import InventoryService, MachineService
 
 log = structlog.get_logger()
@@ -15,8 +16,8 @@ def _verify_drop_code(drop_code: str) -> None:
 
 
 @router.post("/drop")
-async def drop(drop_code: str = Query(...)):
-    _verify_drop_code(drop_code)
+async def drop(payload: DropRequest):
+    _verify_drop_code(payload.drop_code)
     try:
         await MachineService().drop()
         return {"status": "drop_sent"}
@@ -27,8 +28,8 @@ async def drop(drop_code: str = Query(...)):
 
 
 @router.post("/drop/wait")
-async def drop_waiting_callback(drop_code: str = Query(...), slug: str = Query("")):
-    _verify_drop_code(drop_code)
+async def drop_waiting_callback(payload: DropRequest, slug: str = Query("")):
+    _verify_drop_code(payload.drop_code)
     try:
         status = await MachineService().drop_waiting_callback(slug=slug)
         return {"status": status}
