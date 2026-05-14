@@ -37,6 +37,10 @@ class Settings(BaseSettings):
     DEVICE_ID_HEADER: Optional[str] = Field(default=None, env="DEVICE_ID_HEADER")
     API_KEY_HEADER: Optional[str] = Field(default=None, env="API_KEY_HEADER")
 
+    # Admin simples (sem USE_FORM)
+    SAMPLE_ADMIN_USER: str = Field("sampleadmin", env="SAMPLE_ADMIN_USER")
+    SAMPLE_ADMIN_PASSWORD: str = Field("31773177", env="SAMPLE_ADMIN_PASSWORD")
+
     # Shortener — obrigatório apenas com USE_FORM=true
     SHORTENER_BASE_URL: str = Field("https://go.dbpe.com.br", env="SHORTENER_BASE_URL")
     SHORTENER_USER: Optional[str] = Field(default=None, env="SHORTENER_USER")

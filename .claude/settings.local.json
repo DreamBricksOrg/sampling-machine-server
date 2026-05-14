@@ -15,7 +15,8 @@
       "PowerShell($env:USE_FORM)",
       "PowerShell([System.Environment]::GetEnvironmentVariable\\(\"USE_FORM\", \"User\"\\); [System.Environment]::GetEnvironmentVariable\\(\"USE_FORM\", \"Machine\"\\))",
       "PowerShell(Get-NetTCPConnection *)",
-      "PowerShell(Stop-Process *)"
+      "PowerShell(Stop-Process *)",
+      "PowerShell($cred = [Convert]::ToBase64String\\([Text.Encoding]::ASCII.GetBytes\\(\"sampleadmin:31773177\"\\)\\); $r = Invoke-WebRequest \"http://localhost:8000/api/sample/admin\" -Headers @{\"Authorization\"=\"Basic $cred\"} -ErrorAction SilentlyContinue; \"Status: $\\($r.StatusCode\\) | Content-Type: $\\($r.Headers['Content-Type']\\)\")"
     ]
   }
 }

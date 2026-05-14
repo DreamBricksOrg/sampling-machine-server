@@ -1,7 +1,7 @@
 {
-    "current_quantity": 295,
-    "previous_quantity": 297,
-    "quantity_change": 4,
-    "last_updated": "2026-05-13T23:30:57.245957+00:00",
-    "total_dispensed": 18
+    "current_quantity": 297,
+    "previous_quantity": 0,
+    "quantity_change": 300,
+    "last_updated": "2026-05-14T00:22:38.341858+00:00",
+    "total_dispensed": 25
 }

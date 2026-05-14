@@ -119,6 +119,7 @@ def create_app() -> FastAPI:
 
     app.mount("/src/static", StaticFiles(directory="src/static"), name="src-static")
     app.mount("/static", StaticFiles(directory="src/static"), name="static")
+    app.mount("/templates", StaticFiles(directory="src/static"), name="templates")
 
 
     if settings.USE_FORM:

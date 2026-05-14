@@ -1,10 +1,24 @@
+import secrets
 import structlog
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi.responses import FileResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from pathlib import Path
 
 from infrastructure.config import settings
 from integrations.logcenter.log_sender import LogSender
 from .schemas import DropRequest
 from .services import InventoryService, MachineService
+
+_security = HTTPBasic()
+_ADMIN_HTML = Path(__file__).resolve().parents[2] / "static" / "sample" / "html" / "admin.html"
+
+
+def _admin_auth(credentials: HTTPBasicCredentials = Depends(_security)):
+    ok_user = secrets.compare_digest(credentials.username, settings.SAMPLE_ADMIN_USER)
+    ok_pass = secrets.compare_digest(credentials.password, settings.SAMPLE_ADMIN_PASSWORD)
+    if not (ok_user and ok_pass):
+        raise HTTPException(401, "Credenciais inválidas", headers={"WWW-Authenticate": "Basic"})
 
 log = structlog.get_logger()
 router = APIRouter(prefix="/api/sample")
@@ -13,6 +27,11 @@ router = APIRouter(prefix="/api/sample")
 def _verify_drop_code(drop_code: str) -> None:
     if drop_code != settings.DROP_CODE:
         raise HTTPException(403, "Drop code inválido")
+
+
+@router.get("/admin", dependencies=[Depends(_admin_auth)])
+async def admin_page():
+    return FileResponse(_ADMIN_HTML)
 
 
 @router.post("/drop")
@@ -60,6 +79,15 @@ async def admin_dispense():
     try:
         return await MachineService().admin_dispense()
     except Exception:
+        raise HTTPException(500, "Erro interno do servidor")
+
+
+@router.get("/admin/inventory")
+async def get_inventory():
+    try:
+        return InventoryService().repository.load()
+    except Exception as exc:
+        log.error("admin-inventory-get-error", error=str(exc))
         raise HTTPException(500, "Erro interno do servidor")
 
 
