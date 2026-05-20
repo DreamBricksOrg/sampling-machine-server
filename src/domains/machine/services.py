@@ -94,7 +94,7 @@ class MachineService:
             get_serial_comm().send("drop")
         log.info("drop-sent")
 
-    async def drop_waiting_callback(self, slug: str = "") -> str:
+    async def drop_waiting_callback(self) -> str:
         log_sender = LogSender()
         udp_sender = get_udp_sender()
         async with serial_lock:
@@ -105,24 +105,24 @@ class MachineService:
                 response = serial_comm.receive()
                 if response == "dropped":
                     log_sender.log("product_dropped")
-                    log.info("product-dropped", slug=slug)
+                    log.info("product-dropped")
                     await self.inventory.update_on_drop()
                     udp_sender.send_with_confirmation("next")
                     return "completed"
                 if response in ["hand_timeout", "out_of_stock"]:
                     log_sender.log("serial_error", additional=response)
-                    log.error("serial-error", error=response, slug=slug)
+                    log.error("serial-error", error=response)
                     udp_sender.send_with_confirmation("error")
                     return "failed"
                 await asyncio.sleep(0.1)
         log_sender.log("serial_timeout")
-        log.error("serial-timeout", slug=slug)
+        log.error("serial-timeout")
         udp_sender.send_with_confirmation("timeout")
         return "failed"
 
     async def admin_dispense(self) -> dict:
         async with serial_lock:
-            get_serial_comm().send("admin_dispense")
+            get_serial_comm().send("drop")
         await self.inventory.update_on_drop()
         LogSender().log("admin_dispense_triggered")
         log.info("admin-dispensed")

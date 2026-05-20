@@ -47,10 +47,10 @@ async def drop(payload: DropRequest):
 
 
 @router.post("/drop/wait")
-async def drop_waiting_callback(payload: DropRequest, slug: str = Query("")):
+async def drop_waiting_callback(payload: DropRequest):
     _verify_drop_code(payload.drop_code)
     try:
-        status = await MachineService().drop_waiting_callback(slug=slug)
+        status = await MachineService().drop_waiting_callback()
         return {"status": status}
     except HTTPException:
         raise
