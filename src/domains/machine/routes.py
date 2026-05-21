@@ -7,7 +7,7 @@ from pathlib import Path
 
 from infrastructure.config import settings
 from integrations.logcenter.log_sender import LogSender
-from .schemas import DropRequest
+from .schemas import DropRequest, SerialMessageRequest
 from .services import InventoryService, MachineService
 
 _security = HTTPBasic()
@@ -52,6 +52,19 @@ async def drop_waiting_callback(payload: DropRequest):
     try:
         status = await MachineService().drop_waiting_callback()
         return {"status": status}
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(500, "Erro interno do servidor")
+
+
+@router.post("/serial")
+async def send_serial_message(payload: SerialMessageRequest):
+    try:
+        return await MachineService().send_serial_message(
+            message=payload.message,
+            timeout_seconds=payload.timeout_seconds,
+        )
     except HTTPException:
         raise
     except Exception:

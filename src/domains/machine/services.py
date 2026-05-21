@@ -128,6 +128,29 @@ class MachineService:
         log.info("admin-dispensed")
         return {"status": "admin_dispense"}
 
+    async def send_serial_message(self, message: str, timeout_seconds: float = 10) -> dict:
+        async with serial_lock:
+            serial_comm = get_serial_comm()
+            serial_comm.send(message)
+            start_time = time.time()
+            while time.time() - start_time < timeout_seconds:
+                response = serial_comm.receive()
+                if response is not None:
+                    log.info("serial-message-response", message=message, response=response)
+                    return {
+                        "status": "received",
+                        "message": message,
+                        "response": response,
+                    }
+                await asyncio.sleep(0.1)
+
+        log.error("serial-message-timeout", message=message, timeout_seconds=timeout_seconds)
+        return {
+            "status": "timeout",
+            "message": message,
+            "response": None,
+        }
+
     async def turn_on(self) -> dict:
         log_sender = LogSender()
         async with serial_lock:
