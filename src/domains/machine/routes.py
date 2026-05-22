@@ -7,7 +7,7 @@ from pathlib import Path
 
 from infrastructure.config import settings
 from integrations.logcenter.log_sender import LogSender
-from .schemas import DropRequest, SerialMessageRequest
+from .schemas import DropRequest, SerialMessageRequest, DropValueRequest
 from .services import InventoryService, MachineService
 
 _security = HTTPBasic()
@@ -58,8 +58,21 @@ async def drop_waiting_callback(payload: DropRequest):
         raise HTTPException(500, "Erro interno do servidor")
 
 
+@router.post("/drop/value")
+async def drop_value(payload: DropValueRequest):
+    _verify_drop_code(payload.drop_code)
+    try:
+        result = await MachineService().drop_value(payload.quantity, payload.timeout_seconds)
+        return result
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(500, "Erro interno do servidor")
+
+
 @router.post("/serial")
 async def send_serial_message(payload: SerialMessageRequest):
+    _verify_drop_code(payload.drop_code)
     try:
         return await MachineService().send_serial_message(
             message=payload.message,

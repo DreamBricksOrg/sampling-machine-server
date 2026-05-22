@@ -92,7 +92,41 @@ class MachineService:
     async def drop(self) -> None:
         async with serial_lock:
             get_serial_comm().send("drop")
+        await self.inventory.update_on_drop()
         log.info("drop-sent")
+
+    async def drop_value(self, quantity: int, timeout_seconds: float = 20) -> dict:
+        log_sender = LogSender()
+        udp_sender = get_udp_sender()
+        async with serial_lock:
+            serial_comm = get_serial_comm()
+            serial_comm.send(str(quantity))
+            start = time.time()
+            while time.time() - start < timeout_seconds:
+                response = serial_comm.receive()
+                if response is not None:
+                    try:
+                        response_value = int(response)
+                        if response_value == -1:
+                            log_sender.log("serial_error", additional="drop_failed")
+                            log.error("serial-error", error="drop_failed", response=response_value)
+                            udp_sender.send_with_confirmation("error")
+                            return {"status": "failed", "quantity_requested": quantity, "quantity_dispensed": 0}
+                        elif response_value >= quantity:
+                            log_sender.log("product_dropped")
+                            log.info("product-dropped", response=response_value, quantity=quantity)
+                            for _ in range(response_value):
+                                await self.inventory.update_on_drop()
+                            log_sender.log("drop_value_dispensed", additional=f"requested:{quantity},dispensed:{response_value}")
+                            udp_sender.send_with_confirmation("next")
+                            return {"status": "completed", "quantity_requested": quantity, "quantity_dispensed": response_value}
+                    except ValueError:
+                        pass
+                await asyncio.sleep(0.1)
+        log_sender.log("serial_timeout")
+        log.error("serial-timeout")
+        udp_sender.send_with_confirmation("timeout")
+        return {"status": "failed", "quantity_requested": quantity, "quantity_dispensed": 0}
 
     async def drop_waiting_callback(self) -> str:
         log_sender = LogSender()
