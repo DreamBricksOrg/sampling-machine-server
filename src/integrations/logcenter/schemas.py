@@ -7,7 +7,7 @@ LogLevel = Literal["DEBUG","INFO","WARNING","ERROR","CRITICAL"]
 
 class LogIn(BaseModel):
     message: str = Field(..., description="Mensagem do evento")
-    level: LogLevel = "INFO"
+    level: LogLevel = "DEBUG"
     sessionId: Optional[str] = None
     userId: Optional[str] = None
     tags: Optional[List[str]] = None

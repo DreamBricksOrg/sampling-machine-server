@@ -135,7 +135,7 @@ def send_queue_registration_sms(destination_number: str, queue_number: int, qr_c
     Enviar quando a pessoa entra na fila.
     """
     body = (
-        "Você entrou na fila da Capigarra.\n"
+        "Você entrou na fila da maquina.\n"
         f"Seu número na fila é {queue_number}."
     )
     if qr_code_url:
@@ -149,7 +149,7 @@ def send_queue_fifth_position_sms(destination_number: str, queue_number: int) ->
     Enviar quando a pessoa estiver na 5ª posição da fila.
     """
     body = (
-        "Falta pouco para sua vez na Capigarra.\n"
+        "Falta pouco para sua vez na maquina.\n"
         f"Seu número na fila é {queue_number} e você está entre os próximos 5."
     )
     return send_sms_message(body, destination_number)
@@ -160,7 +160,7 @@ def send_queue_next_up_sms(destination_number: str, queue_number: int) -> bool:
     Enviar quando a pessoa for a próxima a jogar.
     """
     body = (
-        "Sua vez na Capigarra está chegando.\n"
+        "Sua vez na maquina está chegando.\n"
         f"Prepare-se: seu número da fila é {queue_number} e você é o próximo."
     )
     return send_sms_message(body, destination_number)

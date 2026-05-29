@@ -14,8 +14,7 @@ from infrastructure.config import settings
 
 import logging
 import structlog
-from logcenter_sdk.config import LogCenterConfig
-from logcenter_sdk.sender import LogCenterSender
+from integrations.logcenter.log_sender import sender
 from domains.machine.routes import router as machine_router
 
 if settings.USE_FORM:
@@ -48,14 +47,6 @@ structlog.configure(
 
 log = structlog.get_logger(__name__)
 
-cfg = LogCenterConfig(
-    base_url=(settings.LOG_API or "").rstrip("/"),
-    project_id=settings.LOG_PROJECT_ID,
-    api_key=settings.LOG_API_KEY,
-    enabled=True,
-)
-sender = LogCenterSender(cfg)
-
 try:
     import sentry_sdk
     from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
@@ -68,6 +59,7 @@ except Exception:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.log_sender = sender
+    sender.start_background_flush()
 
     if settings.USE_FORM:
         await init_db()
@@ -75,10 +67,10 @@ async def lifespan(app: FastAPI):
     async def _delayed_startup_log():
         await asyncio.sleep(0.3)
         await sender.send(
-            level="INFO",
-            message="Hershey's Capibarra startup",
-            status="OK",
-            tags=["startup"],
+            level="DEBUG",
+            message="Docile Sample Machine startup",
+            status="SUCCESS",
+            tags=["startup", "server"],
             data={"env": settings.ENV, "version": "0.1.0-dev"},
             spool_on_fail=False,
         )
@@ -90,10 +82,10 @@ async def lifespan(app: FastAPI):
     # === SHUTDOWN ===
     try:
         await sender.send(
-            level="INFO",
-            message="Hershey's Capibarra shutdown",
-            status="OK",
-            tags=["shutdown"],
+            level="DEBUG",
+            message="Docile Sample Machine shutdown",
+            status="SUCCESS",
+            tags=["shutdown", "server"],
             data={"env": settings.ENV, "version": "0.1.0-dev"},
             spool_on_fail=False
         )
