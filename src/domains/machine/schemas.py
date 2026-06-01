@@ -14,4 +14,4 @@ class SerialMessageRequest(BaseModel):
 class DropValueRequest(BaseModel):
     drop_code: str
     quantity: int = Field(..., gt=0, description="Quantidade a ser dispensada")
-    timeout_seconds: float = Field(20, gt=0, le=120, description="Tempo máximo aguardando resposta")
+    timeout_seconds: float = Field(20, gt=0, le=140, description="Tempo máximo aguardando resposta")
