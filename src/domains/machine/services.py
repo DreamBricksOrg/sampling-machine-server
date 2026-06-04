@@ -153,9 +153,9 @@ class MachineService:
         udp_sender.send_with_confirmation("timeout")
         return "failed"
 
-    async def admin_dispense(self) -> dict:
+    async def admin_dispense(self, message: str) -> dict:
         async with serial_lock:
-            get_serial_comm().send("drop")
+            get_serial_comm().send(message)
         await self.inventory.update_on_drop()
         LogSender().log("admin_dispense_triggered", status="SUCCESS")
         log.info("admin-dispensed")

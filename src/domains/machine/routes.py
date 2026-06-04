@@ -100,10 +100,14 @@ async def machine_off():
         raise HTTPException(500, "Erro interno do servidor")
 
 
-@router.post("/admin/dispense")
-async def admin_dispense():
+@router.post("/admin/dispense", dependencies=[Depends(_admin_auth)])
+async def admin_dispense(request: Request):
+    body = await request.json()
+    message = str(body.get("message", "")).strip()
+    if not message:
+        raise HTTPException(400, "Campo 'message' obrigatório")
     try:
-        return await MachineService().admin_dispense()
+        return await MachineService().admin_dispense(message)
     except Exception:
         raise HTTPException(500, "Erro interno do servidor")
 
