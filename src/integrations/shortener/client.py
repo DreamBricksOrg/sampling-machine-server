@@ -74,7 +74,7 @@ async def create_short_link(
         headers = {"Authorization": f"Bearer {token}"}
 
         form = {
-            "name": (name or f"DOCILE session {session_id or ''}").strip(),
+            "name": (name or f"MACHINE session {session_id or ''}").strip(),
             "url": long_url,
         }
         if callback_url:

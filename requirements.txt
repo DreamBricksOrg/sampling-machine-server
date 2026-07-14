@@ -21,3 +21,4 @@ pytest-asyncio>=0.23
 ruff>=0.5
 phonenumbers>=9.0.26
 logcenter-sdk==0.1.dev0
+pyserial>=3.5
