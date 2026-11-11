@@ -1,6 +1,9 @@
+@import url("main.css");
+
+
 .container {
     width: 100%;
-    min-height: 100vh;
+    height: 80%;
     background-image: url('../assets/images/tela1_background.png');
     background-size: cover;
     background-position: center;
@@ -12,13 +15,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 100%;
+    width: 100%;
 }
 
 .title {
-    font-family: 'HDColton-XWideMedium';
-    color: #FDBB17;
+    color: white;
     text-align: center;
-    font-size: 0.6rem;
+    font-size: 30px;
     letter-spacing: 0.2rem;
     margin-top: 20px;
 }
@@ -49,8 +53,7 @@ form {
 
 .form-label {
     margin-bottom: 5px;
-    font-family: 'HDColton-XWideMedium';
-    color: #FDBB17;
+    color: white;
     font-size: 0.8rem;
     letter-spacing: 0.2rem;
 }
@@ -61,22 +64,19 @@ form {
     width: 80%;
     font-size: 1rem;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.5);
-    font-family: 'HDColton-XWideMedium';
     color: #000;
     letter-spacing: 0px;
 }
 
 .form-input.invalid {
-    border: 2px solid #ff0000;
+    border: 2px solid #ff5033;
 }
 
 .form-error {
-    color: #ff0000;
-    font-size: 0.7rem;
+    color: #ff5033;
+    font-size: 20px;
     margin-top: -15px;
     margin-bottom: 10px;
-    font-family: 'HDColton-XWideMedium';
     text-align: center;
     width: 80%;
 }
@@ -107,6 +107,8 @@ form {
     display: flex;
     justify-content: center;
     align-items: center;
+    bottom: 0;
+    position: absolute;
 }
 
 @media (min-height: 720px) {
@@ -115,19 +117,7 @@ form {
     }
 }
 
-.button-container button {
-    font-family: 'HDColton-XWideMedium';
-    letter-spacing: 0.2rem;
-    padding: 10px 30px;
-    font-size: 0.8rem;
-    background-color: #000;
-    color: #FDBB17;
-    border: none;
-    text-transform: uppercase;
-    cursor: pointer;
-}
-
 .button-container .btn:disabled {
     cursor: not-allowed;
-    background-color: #00000060;
+    background-color: rgba(0, 37, 255, 0.376);
 }

@@ -1,6 +1,7 @@
+@import url("main.css");
 .container {
     width: 100%;
-    min-height: 100vh;
+    height: 85% !important;
     background-image: url('../assets/images/tela1_background.png');
     background-size: cover;
     background-position: center;
@@ -17,42 +18,29 @@
     text-transform: uppercase;
 }
 
-@media (min-height: 720px) {
-    .text-content {
-        margin-top: 40px;
-    }
-}
 
 .text-content p:first-child {
-    font-family: 'HDColton-XWideLight';
     color: #fff;
-    font-size: 1.6rem;
+    font-size: 80px;
     letter-spacing: 0.2rem;
     text-transform: uppercase;
 }
 
 .text-content p:nth-child(2) {
-    font-family: 'HDColton-XWideSemiBold';
-    font-size: 1.5rem;
+    font-size: 80px;
     letter-spacing: 0.2rem;
     text-transform: uppercase;
-    color: #FDBB17;
+    color: white;
 }
 
 .text-content p:nth-child(3) {
     margin-top: 5px;
-    font-family: 'HDColton-XWideLight';
-    font-size: 0.75rem;
+    font-size: 80px;
     letter-spacing: 0.2rem;
     text-transform: uppercase;
-    color: #FDBB17;
+    color: white;
 }
 
-@media (min-height: 720px) {
-    .text-content p:nth-child(3) {
-        margin-top: 20px;
-    }
-}
 
 .product-image {
     width: 100%;
@@ -79,8 +67,6 @@
 }
 
 .text-bottom p:first-child {
-    font-family: 'HDColton-XWideLight';
-    color: #FDBB17;
     font-size: 1rem;
     letter-spacing: 0.2rem;
     text-transform: uppercase;
@@ -123,7 +109,6 @@
     font-family: 'HDColton-XWideLight';
     font-size: 5px;
     letter-spacing: 0.2rem;
-    color: #FDBB17;
     text-align: center;
     margin: 0;
 }

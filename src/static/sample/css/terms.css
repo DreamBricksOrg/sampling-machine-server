@@ -1,16 +1,4 @@
-* {
-    font-family: 'HDColton-XWideLight' !important;
-}
-
-.container {
-    width: 100%;
-    min-height: 100dvh;
-    background-image: url('../assets/images/tela1_background.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    position: relative;
-}
+@import url("main.css");
 
 .content {
     display: flex;
@@ -18,7 +6,7 @@
     align-items: center;
 }
 
-.button-container {
+.button-container { 
     margin-top: 15px;
     width: 100%;
     display: flex;
@@ -30,35 +18,33 @@
     }
 }
 
-.button-container button {
-    font-family: 'HDColton-XWideMedium';
-    letter-spacing: 0.2rem;
-    padding: 10px 30px;
-    font-size: 0.8rem;
-    background-color: #000;
-    color: #FDBB17;
-    border: none;
-    text-transform: uppercase;
-}
 
 .button-container .btn:disabled {
     cursor: not-allowed;
 }
 
+#stop-btn{
+    background-color: rgba(0, 0, 0, 0) !important;
+    color: white;
+    border: white 5px solid !important;
+}
+
 .terms-content {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 5px solid white;
+    border-radius: 5px;
     margin-top: 20px;
     width: 80%;
     padding: 15px;
     height: 200px;
-    overflow: scroll;
+    overflow: auto;
     text-align: justify;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 
     @media (min-height: 820px) {
-        height: 300px;
+        height: 550px;
     }
 }
 
@@ -68,31 +54,30 @@
 }
 
 .terms-content::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 1);
     border-radius: 4px;
 }
 
 .terms-content::-webkit-scrollbar-thumb {
-    background: rgba(253, 187, 23, 0.8);
+    background: rgb(0, 37, 255, 0);
     border-radius: 4px;
 }
 
 .terms-content::-webkit-scrollbar-thumb:hover {
-    background: rgba(253, 187, 23, 1);
+    background: rgb(0, 37, 255, 0);
 }
 
 /* Para Firefox */
 .terms-content {
     scrollbar-width: thin;
-    scrollbar-color: rgba(253, 187, 23, 0.8) rgba(255, 255, 255, 0.1);
+    scrollbar-color: rgb(0, 37, 255, 0) rgba(0, 0, 0, 1);
 }
 
 
 .terms-content p {
-    font-family: 'HDColton-XWideSemiBold';
-    font-size: 10px;
+    font-size: 15px;
     text-transform: uppercase;
-    color: #FDBB17;
+    color: white;
 }
 
 
@@ -100,10 +85,9 @@
     display: flex;
     align-items: center;
     margin-top: 20px;
-    font-family: 'HDColton-XWideLight';
-    font-size: 12px;
+    font-size: 15px;
     text-transform: uppercase;
-    color: #FDBB17;
+    color: white;
     user-select: none;
 
     @media (min-height: 720px) {
@@ -146,9 +130,8 @@
 
 .after-terms-text {
     margin-top: 15px;
-    font-family: 'HDColton-XWideSemiBold';
-    font-size: 10px;
-    color: #FDBB17;
+    font-size: 15px;
+    color: white;
     text-align: center;
 
     @media (min-height: 720px) {

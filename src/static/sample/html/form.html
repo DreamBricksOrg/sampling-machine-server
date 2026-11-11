@@ -6,11 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sample Machine - Cadastro</title>
     <link rel="stylesheet" href="/templates/sample/css/sample-root.css">
-    <link rel="stylesheet" href="/templates/sample/css/form.css">
+    <link rel="stylesheet" href="/templates/sample/css/form.css">    
+    <script src="{{url_for('static', path='sample/js/util.js')}}"></script>
+    <script src="{{url_for('static', path='sample/js/aes_encryption.js')}}"></script>
+    <script src="{{url_for('static', path='sample/js/rsa_encryption.js')}}"></script>
+    <script src="{{url_for('static', path='sample/js/db_encryption.js')}}"></script>
+    <script src="{{url_for('static', path='sample/js/generate-keys.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
+    {% include "header.html" %}
     <div class="container">
 
         <div class="content">
@@ -37,6 +43,7 @@
 
         </div>
     </div>
+
 
     <script>
         const COLLECTION = 'machine';

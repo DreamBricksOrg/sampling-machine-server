@@ -11,6 +11,7 @@
 </head>
 
 <body>
+    {% include "header.html" %}
     <div class="container">
         <div class="content">
 
@@ -45,17 +46,18 @@
                 </p>
             </div>
 
-            <label class="checkbox-container">
+            <!-- <label class="checkbox-container">
                 <input type="checkbox" id="accept-terms">
                 LI E ACEITO OS TERMOS E CONDIÇÕES
             </label>
 
             <p class="after-terms-text">
                 AO ACEITAR, SEUS DADOS SERÃO USADOS EXCLUSIVAMENTE PARA ESTA AÇÃO
-            </p>
+            </p> -->
 
             <div class="button-container">
-                <button class="btn" id="continue-btn">CONTINUAR</button>
+                <button class="btn" id="stop-btn">NÃO ACEITO OS TERMOS</button>
+                <button class="btn" id="continue-btn">LI E ACEITO OS TERMOS</button>
             </div>
 
         </div>

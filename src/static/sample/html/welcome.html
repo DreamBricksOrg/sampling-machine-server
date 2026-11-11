@@ -1,27 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sample Machine</title>
-    <link rel="stylesheet" href="/templates/sample/css/sample-root.css">
-    <link rel="stylesheet" href="/templates/sample/css/cta.css">
-</head>
+    <link rel="stylesheet" href="/src/static/sample/css/sample-root.css" />
+    <link rel="stylesheet" href="/src/static/sample/css/welcome.css" />
+  </head>
 
-<body>
+  <body>
+    {% include "header.html" %}
     <div class="container">
+      <div class="text-content">
+        <p>GANHE SUA</p>
+        <p>AMOSTRA</p>
+        <p>GRÁTIS</p>
+      </div>
 
-        <div class="text-content">
-            <p>GANHE SUA</p>
-            <p>AMOSTRA</p>
-            <p>GRÁTIS</p>
-        </div>
-
-        <div class="button-container">
-            <button class="btn" onclick="proceedToTerms()">CONTINUAR</button>
-        </div>
+      <div class="button-container">
+        <button class="btn" onclick="proceedToTerms()">CONTINUAR</button>
+      </div>
     </div>
+
 
     <script>
         function getUrlParameter(name) {

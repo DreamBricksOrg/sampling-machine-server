@@ -1,0 +1,53 @@
+@font-face {
+  font-family: "Araboto_Black";
+  src: url("/src/static/sample/assets/fonts/DreamBricks/Araboto\ Black\ 400.ttf");
+}
+
+@font-face {
+  font-family: "Araboto_Bold";
+  src: url("/src/static/sample/assets/fonts/DreamBricks/Araboto\ Bold\ 400.ttf");
+}
+
+@font-face {
+  font-family: "Araboto_Light";
+  src: url("/src/static/sample/assets/fonts/DreamBricks/Araboto\ Light\ 400.ttf");
+}
+
+@font-face {
+  font-family: "Araboto_Medium";
+  src: url("/src/static/sample/assets/fonts/DreamBricks/Araboto\ Medium\ 400.ttf");
+}
+
+body {
+  background-color: #52cdef;
+  color: white;
+  font-family: Araboto_Bold;
+  height: 100dvh;
+}
+
+.container {
+  height: 85%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+#logo {
+  width: 100px;
+  margin-left: 15px;
+}
+
+
+button {
+  width: 200px;
+  height: 50px;
+  border-radius: 50px;
+  margin: 5px;
+  border: 0px;
+  font-family: Araboto_Bold;
+  background-color: white;
+  color: #52cdef;
+}

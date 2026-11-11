@@ -4,8 +4,7 @@ from infrastructure.config import settings
 
 _client = AsyncIOMotorClient(
     settings.MONGO_URI,
-    tls=True,
-    tlsCAFile=certifi.where(),
+    tls=False,
     serverSelectionTimeoutMS=20000,
 )
 db = _client[settings.MONGO_DB]
