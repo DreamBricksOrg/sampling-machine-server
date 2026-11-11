@@ -6,7 +6,7 @@ from typing import Optional
 class Settings(BaseSettings):
     # Mode
     USE_FORM: bool = Field(True, env="USE_FORM")
-
+    
     BASE_URL: str = Field(..., env="BASE_URL")
     APP_NAME: str = Field("Sample Machine", env="APP_NAME")
     ENV: str = Field("dev", env="ENV")
@@ -63,7 +63,8 @@ class Settings(BaseSettings):
 
     # Machine
     DROP_CODE: str = Field(..., env="DROP_CODE")
-
+    DROP_CALLBACK: bool = Field(False, env="DROP_CALLBACK")
+    
     @model_validator(mode="after")
     def check_form_deps(self) -> "Settings":
         if self.USE_FORM:

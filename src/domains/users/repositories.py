@@ -4,6 +4,7 @@ from infrastructure.database.mongo import db
 
 DEFAULT_COLLECTION = "machine"
 SESSIONS_COLLECTION = "sample_sessions"
+CURRENT_COLLECTION = "current_sessions"
 
 
 class SessionRepository:
@@ -53,7 +54,10 @@ class UserRepository:
         return repo
 
     async def ensure_unique_email_index(self) -> None:
-        await self.collection.create_index("email", unique=True, name="uniq_email")
+        await self.collection.create_index("user_data.email", unique=True, name="uniq_email", partialFilterExpression={"user_data.email": {"$type": "string"}})
+
+    async def ensure_unique_code(self) -> None:
+        await self.collection.create_index("code", unique=True, name="uniq_code")
 
     async def create(self, doc: dict) -> None:
         await self.collection.insert_one(doc)
@@ -104,4 +108,25 @@ class UserRepository:
         return await self.collection.update_many(
             {"status": "registered", "canPickFrom": {"$lte": today}},
             {"$set": {"status": "eligible", "updatedAt": updated_at}},
+        )
+    
+class CurrentSessionRepository:
+    def __init__(self, collection_name: str = CURRENT_COLLECTION):
+        self.collection_name = collection_name
+        self.collection = db[collection_name]
+
+    async def get_current_id(self):
+        return await self.collection.find_one({"_id": 1})
+
+    async def update_current(self, current_id: int):
+        await self.collection.update_one(
+            {"_id": 1},  # Search condition
+            {"$set": {"current_id": current_id}},  # Fields to update
+            upsert=True,
+        )
+    async def clear_current_session(self):
+        await self.collection.update_one(
+            {"_id": 1},  # Search condition
+            {"$set": {"current_id": None}},  # Fields to update
+            upsert=True,
         )

@@ -16,6 +16,11 @@ class SessionCompleteResponse(BaseModel):
     status: str
     session_id: str
 
+class SessionIsCompleteRequest(BaseModel):
+    session_id: str
+
+class SessionIsCompleteResponse(BaseModel):
+    is_complete: bool
 
 class QRCodeInitResponse(BaseModel):
     session_id: str
@@ -38,8 +43,8 @@ class SessionGetResponse(BaseModel):
 
 # ---------- Requests ----------
 class UserInitRequest(BaseModel):
-    name: str = Field(..., min_length=1)
-    email: EmailStr
+    ip: Optional[str] = None
+    user_data: Optional[str] = None
     code: str
     registerDay: Optional[datetime] = None
 
@@ -50,7 +55,6 @@ class UserUpdateRequest(BaseModel):
 class UserPickupRequest(BaseModel):
     """Usado pelo worker ou endpoint para registrar a retirada de sucos."""
     id: Optional[str] = None
-    email: Optional[EmailStr] = None
     day: datetime = Field(..., description="Dia da retirada")
     productsPicked: int = Field(..., ge=1, description="Quantidade retirada nesse dia")
 
@@ -58,8 +62,7 @@ class UserPickupRequest(BaseModel):
 # ---------- Responses ----------
 class UserInitResponse(BaseModel):
     id: str
-    name: str
-    email: EmailStr
+    user_data: Optional[str] = None
     status: Status
     registerDay: datetime
     canPickFrom: datetime
@@ -67,8 +70,7 @@ class UserInitResponse(BaseModel):
 
 class UserGetResponse(BaseModel):
     id: str
-    name: str
-    email: EmailStr
+    user_data: Optional[str] = None
     status: Status
     registerDay: datetime
     canPickFrom: datetime
@@ -77,7 +79,7 @@ class UserGetResponse(BaseModel):
 
 class UserPickupResponse(BaseModel):
     id: str
-    email: EmailStr
+    user_data: Optional[str] = None
     pickedDay: datetime
     productsPicked: int
     status: Status  # deve vir "picked"

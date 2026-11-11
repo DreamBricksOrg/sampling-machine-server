@@ -24,18 +24,34 @@
     <script>
         async function completeSession() {
             const sessionId = localStorage.getItem('session_id');
-            const slug = localStorage.getItem('slug');
-            if (!sessionId || !slug) return;
+            setStorage("obtainedPrize", true, 1);
+            if (!sessionId) return;
 
             try {
-                await fetch('/api/sample/session/complete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ session_id: sessionId, slug }),
-                });
-            } catch (_) {}
+                const result = await fetch(
+                    `/api/sample/session/complete/${encodeURIComponent(sessionId)}`
+                );
+                const data = await result.json();
+                console.log(data);
+                if (!data.is_complete) {
+                    setTimeout(() => {
+                        completeSession();
+                    }, 5000);
+                }
+                else {
+                    const queryString = new URLSearchParams(window.location.search).toString();
+                    window.location.href = queryString
+                        ? `/api/sample/finish?${queryString}`
+                        : '/api/sample/finish';
+                }
+            } catch (_) { }
         }
-
+        function setStorage(key, value, timeInMinutes) {
+            localStorage.setItem(key, JSON.stringify({
+                value: value,
+                expires: Date.now() + timeInMinutes * 60000
+            }));
+        }
         document.addEventListener('DOMContentLoaded', completeSession);
     </script>
 </body>

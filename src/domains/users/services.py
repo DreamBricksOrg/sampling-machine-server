@@ -5,7 +5,7 @@ import structlog
 from fastapi import HTTPException
 from pydantic import EmailStr
 from pymongo.errors import DuplicateKeyError
-
+import json 
 from infrastructure.config import settings
 from integrations.logcenter.log_sender import LogSender
 from integrations.shortener.client import create_short_link
@@ -22,7 +22,7 @@ from .schemas import (
     UserPickupResponse,
     UserUpdateRequest,
 )
-from .repositories import DEFAULT_COLLECTION, SessionRepository, UserRepository
+from .repositories import DEFAULT_COLLECTION, SessionRepository, UserRepository, CurrentSessionRepository
 
 log = structlog.get_logger()
 _udp_sender: UDPSender | None = None
@@ -104,7 +104,10 @@ class SessionService:
         status_final = "failed"
         try:
             LogSender().log("session_complete")
-            status_final = await MachineService().drop_waiting_callback(slug=req.slug)
+            if settings.DROP_CALLBACK:
+                status_final = await MachineService().drop_waiting_callback(slug=req.slug)
+            else:
+                status_final = await MachineService().drop(slug=req.slug)
             return SessionCompleteResponse(status="ok", session_id=req.session_id)
         except HTTPException:
             raise
@@ -133,9 +136,39 @@ class SessionService:
 
         session = await self.sessions.find(sid)
         LogSender().log("form_used_or_invalid", status=session.get("status") if session else None)
-        return "used.html"
+        return "error.html"
 
+    async def complete_current_session(self):
+            from domains.machine.services import MachineService
+            from domains.users.services import CurrentSessionService
+            current_id = await CurrentSessionService().get_current_id()
+            req = await self.get_session_info(current_id)
+            doc = await self.sessions.try_start_processing(req.session_id, req.slug, now_utc())
+            if not doc:
+                session = await self.sessions.find(req.session_id)
+                if not session:
+                    raise HTTPException(404, "Sessão inválida ou expirada")
+                if session.get("slug") != req.slug:
+                    raise HTTPException(400, "Slug não corresponde à sessão")
+                raise HTTPException(409, "Sessão já encerrada ou em processamento")
 
+            status_final = "failed"
+            try:
+                LogSender().log("session_complete")
+                if settings.DROP_CALLBACK:
+                    status_final = await MachineService().drop_waiting_callback(slug=req.slug)
+                else:
+                    status_final = await MachineService().drop(slug=req.slug)
+                return SessionCompleteResponse(status="ok", session_id=req.session_id)
+            except HTTPException:
+                raise
+            except Exception as exc:
+                log.error("session-complete-error", error=str(exc), session_id=req.session_id, slug=req.slug)
+                raise HTTPException(500, "Erro interno do servidor")
+            finally:
+                await self.sessions.finalize(req.session_id, status_final, now_utc())
+                await CurrentSessionService().clear_current_session()
+                log.info("session-finalized", session_id=req.session_id, status=status_final)
 def start_of_day_utc(value) -> datetime:
     if not value:
         value = now_utc()
@@ -155,8 +188,6 @@ def start_of_day_utc(value) -> datetime:
 def user_response(doc: dict) -> UserGetResponse:
     return UserGetResponse(
         id=doc["_id"],
-        name=doc["name"],
-        email=doc["email"],
         status=doc.get("status", "registered"),
         registerDay=doc["registerDay"],
         canPickFrom=doc["canPickFrom"],
@@ -180,14 +211,19 @@ class UserService:
         except Exception as exc:
             log.warning("ensure-unique-email-index-failed", error=str(exc))
 
+        try:
+            await repo.ensure_unique_code()
+        except Exception as exc:
+            log.warning("ensure_unique_code-index-failed", error=str(exc))
+
         reg_id = str(uuid.uuid4())
         today = now_utc()
         register_day = payload.registerDay or today
         doc = {
             "_id": reg_id,
+            "ip": payload.ip,
             "code": payload.code,
-            "name": payload.name,
-            "email": str(payload.email).lower(),
+            "user_data": json.loads(payload.user_data),
             "registerDay": register_day,
             "canPickFrom": register_day,
             "status": "registered",
@@ -199,15 +235,20 @@ class UserService:
 
         try:
             await repo.create(doc)
-        except DuplicateKeyError:
-            log.warning("email-already-exists", email=payload.email, collection=repo.collection_name)
-            raise HTTPException(status_code=409, detail="E-mail já cadastrado")
+        except DuplicateKeyError as e:
+            details = e.details or {}
+            duplicated_field = next(iter(details.get("keyPattern", {})), None)              
+            if duplicated_field == "code":
+                log.warning("Code-already-exists", payload.code, collection=repo.collection_name)
+                raise HTTPException(status_code=409, detail="Id de Sessão já cadastrado")
+            else:
+                log.warning("email-already-exists", email=payload.email, collection=repo.collection_name)
+                raise HTTPException(status_code=409, detail="E-mail já cadastrado")
 
         log.info("user-created", id=reg_id, collection=repo.collection_name)
         return UserInitResponse(
             id=reg_id,
-            name=doc["name"],
-            email=doc["email"],
+            user_data=json.dumps(doc["user_data"]),
             status=doc["status"],
             registerDay=doc["registerDay"],
             canPickFrom=doc["canPickFrom"],
@@ -255,10 +296,10 @@ class UserService:
         return {"detail": "Registro removido com sucesso"}
 
     async def register_pickup(self, payload: UserPickupRequest) -> UserPickupResponse:
-        if not payload.id and not payload.email:
-            raise HTTPException(status_code=400, detail="Informe id ou email")
+        if not payload.id:
+            raise HTTPException(status_code=400, detail="Informe id")
 
-        query = {"_id": payload.id} if payload.id else {"email": str(payload.email).lower()}
+        query = {"_id": payload.id}
         user = await self.repository.find_one(query)
         if not user:
             log.warning("user-pickup-not-found", query=query, collection=self.repository.collection_name)
@@ -300,7 +341,7 @@ class UserService:
         )
         return UserPickupResponse(
             id=updated["_id"],
-            email=updated["email"],
+            user_data=json.dumps(updated["user_data"]),
             pickedDay=day_dt,
             productsPicked=int(updated.get("productsPicked", 0)),
             status=updated.get("status", "picked"),
@@ -315,3 +356,20 @@ class UserService:
             collection=self.repository.collection_name,
         )
         return {"matched": result.matched_count, "modified": result.modified_count}
+
+class CurrentSessionService:
+    def __init__(self, repository: CurrentSessionRepository | None = None):
+        self.repository = repository or CurrentSessionRepository()
+    
+    async def get_current_id(self):
+        current = await self.repository.get_current_id()
+        if current is None or current["current_id"] is None:
+            return None
+        else:
+            return current["current_id"]
+    
+    def update_current(self, current_id: int):
+        return self.repository.update_current(current_id)
+    
+    def clear_current_session(self):
+        return self.repository.clear_current_session()

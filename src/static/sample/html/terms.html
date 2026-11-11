@@ -65,78 +65,79 @@
     </div>
 
     <script>
+        const USE_FORM = "{{ use_form }}";
+        const COLLECTION = 'machine';
+        function getUrlParameter(name) {
+            return new URLSearchParams(window.location.search).get(name);
+        }
+
+        async function getSessionInfo(sessionId) {
+            try {
+                const response = await fetch(`/api/sample/session/${sessionId}`);
+                if (response.ok) return await response.json();
+            } catch (_) { }
+            return null;
+        }
+
+        async function saveSessionData() {
+            const sessionId = getUrlParameter("sid");
+            const obtainedPrize = getStorage("obtainedPrize")
+
+            if (!sessionId) return;
+            if (obtainedPrize) window.location.href = "/api/sample/finish"
+
+            localStorage.setItem("session_id", sessionId);
+
+            const sessionInfo = await getSessionInfo(sessionId);
+            if (sessionInfo && sessionInfo.slug) {
+                localStorage.setItem("slug", sessionInfo.slug);
+            }
+        }
+        function getStorage(key) {
+            const item = JSON.parse(localStorage.getItem(key));
+
+            if (!item) return null;
+
+            if (Date.now() > item.expires) {
+                localStorage.removeItem(key);
+                return null;
+            }
+
+            return item.value;
+        }
         document.addEventListener('DOMContentLoaded', function () {
+            saveSessionData()
             const termsContent = document.querySelector('.terms-content');
-            const checkbox = document.getElementById('accept-terms');
             const btn = document.getElementById('continue-btn');
-
-            checkbox.disabled = true;
-            btn.disabled = true;
-            btn.style.opacity = 0.5;
-            checkbox.style.opacity = 0.5;
-
-            function unlockCheckbox() {
-                checkbox.disabled = false;
-                checkbox.style.opacity = 1;
-            }
-
-            termsContent.addEventListener('scroll', function () {
-                if (termsContent.scrollTop + termsContent.clientHeight >= termsContent.scrollHeight - 2) {
-                    unlockCheckbox();
-                }
-            });
-
-            if (termsContent.scrollHeight <= termsContent.clientHeight) {
-                unlockCheckbox();
-            }
-
-            checkbox.addEventListener('change', function () {
-                btn.disabled = !checkbox.checked;
-                btn.style.opacity = checkbox.checked ? 1 : 0.5;
-            });
-
-            function warnMustRead(e) {
-                if (checkbox.disabled) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    Swal.fire({
-                        title: 'Atenção!',
-                        text: 'É necessário ler todos os termos antes de aceitar.',
-                        icon: 'warning',
-                        confirmButtonText: 'Entendi',
-                        confirmButtonColor: '#000',
-                    });
-                }
-            }
-
-            checkbox.addEventListener('click', warnMustRead);
-            checkbox.addEventListener('touchstart', warnMustRead);
-
-            function warnMustAccept(e) {
-                if (btn.disabled) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    Swal.fire({
-                        title: 'Atenção!',
-                        text: 'É necessário aceitar os termos antes de continuar.',
-                        icon: 'warning',
-                        confirmButtonText: 'Entendi',
-                        confirmButtonColor: '#000',
-                    });
-                } else {
-                    proceed();
-                }
-            }
-
-            btn.addEventListener('click', warnMustAccept);
-            btn.addEventListener('touchstart', warnMustAccept);
+            const stop_btn = document.getElementById('stop-btn');
+            btn.addEventListener('click', proceed);
+            btn.addEventListener('touchstart', proceed);
+            stop_btn.addEventListener('click', goToThanksScreen);
+            stop_btn.addEventListener('touchstart', goToThanksScreen);
         });
 
-        function proceed() {
+        async function proceed() {
+
+
+            const queryString = new URLSearchParams(window.location.search).toString();
+            if (USE_FORM.toLocaleLowerCase() == "true") {
+                window.location.href = queryString
+                    ? `/api/sample/form?${queryString}`
+                    : '/api/sample/form';
+            }
+            else {
+                window.location.href = queryString
+                    ? `/api/sample/claim?${queryString}`
+                    : '/api/sample/claim';
+            }
+
+        }
+
+        function goToThanksScreen() {
             const queryString = new URLSearchParams(window.location.search).toString();
             window.location.href = queryString
-                ? `/api/sample/form?${queryString}`
-                : '/api/sample/form';
+                ? `/api/sample/finish?${queryString}`
+                : '/api/sample/finish';
         }
     </script>
 </body>

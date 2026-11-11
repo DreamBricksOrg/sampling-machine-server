@@ -13,7 +13,7 @@ class SerialComm(metaclass=Singleton):
         self.startup_delay = startup_delay
         self.ser = None
         self._connect()
-
+        self.buffer_was_reset = False
     def _connect(self):
         with self.lock:
             if self.ser and self.ser.is_open:
@@ -29,6 +29,19 @@ class SerialComm(metaclass=Singleton):
             self.ser.reset_input_buffer()
             self.ser.reset_output_buffer()
 
+    def reconnect(self):
+        with self.lock:
+            try:
+                if self.ser and self.ser.is_open:
+                    self.ser.close()
+            except Exception:
+                pass
+
+            self.ser = None
+
+            self._connect()
+            self.buffer_was_reset = False
+    
     def send(self, msg):
         with self.lock:
             self._connect()
@@ -42,3 +55,9 @@ class SerialComm(metaclass=Singleton):
                 return None
             data = self.ser.readline().decode("utf-8", errors="ignore").strip()
             return data.lower() or None
+
+    def clear_input_buffer(self):
+        with self.lock:
+            self._connect()
+            self.ser.reset_input_buffer()
+            self.buffer_was_reset = True

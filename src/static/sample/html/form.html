@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sample Machine - Cadastro</title>
     <link rel="stylesheet" href="/templates/sample/css/sample-root.css">
-    <link rel="stylesheet" href="/templates/sample/css/form.css">    
+    <link rel="stylesheet" href="/templates/sample/css/form.css">
     <script src="{{url_for('static', path='sample/js/util.js')}}"></script>
     <script src="{{url_for('static', path='sample/js/aes_encryption.js')}}"></script>
     <script src="{{url_for('static', path='sample/js/rsa_encryption.js')}}"></script>
@@ -43,7 +43,6 @@
 
         </div>
     </div>
-
 
     <script>
         const COLLECTION = 'machine';
@@ -117,12 +116,12 @@
             return { ok: res.ok, status: res.status, data };
         }
 
-        async function tryRegisterPickup(email) {
+        async function tryRegisterPickup(id) {
             const today = new Date().toISOString().split('T')[0];
             const res = await fetch(`/api/users/pickup/?collection=${COLLECTION}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, day: today, productsPicked: 1 }),
+                body: JSON.stringify({ id: id, day: today, productsPicked: 1 }),
             });
             const data = await res.json().catch(() => ({}));
             return { ok: res.ok, status: res.status, data };
@@ -134,25 +133,46 @@
                 ? `/api/sample/claim?${queryString}`
                 : '/api/sample/claim';
         }
+        async function updateRsaKeyPair() {
+            const response = await fetch("/templates/sample/rsa_public.pem");
+
+            if (!response.ok) {
+                throw new Error("Could not load private key");
+            }
+            else {
+                console.log("Teste");
+            }
+            const privateKey = await response.text();
+            return privateKey
+        };
 
         document.getElementById('formulario').addEventListener('submit', async function (e) {
             e.preventDefault();
             validarCampos();
             if (btnEnviar.disabled) return;
+            const privateKey = await updateRsaKeyPair();
 
             const sessionId = localStorage.getItem('session_id') || '';
+
+            const nome = await dbEncryptString(nomeInput.value.trim(), privateKey)
+            const email = await dbEncryptString(emailInput.value.trim(), privateKey)
+            console.log(nome);
+            const user_data = {
+                nome: nome,
+                email: email
+            }
             const payload = {
-                name: nomeInput.value.trim(),
-                email: emailInput.value.trim(),
                 code: sessionId,
+                user_data: JSON.stringify(user_data)
             };
 
             try {
                 const res = await tryCreateUser(payload);
 
-                if (res.ok || res.status === 409) {
-                    await tryRegisterPickup(payload.email);
-                    redirectToClaim();
+                if (res.ok || res.status === 409) {                    
+                    const pickup_res = await tryRegisterPickup(res.data.id);
+                    if (pickup_res.ok)
+                        redirectToClaim();
                 } else {
                     const msg = (res.data && (res.data.detail || res.data.message)) || 'Erro ao cadastrar';
                     await Swal.fire({ icon: 'error', title: 'Erro', text: msg, confirmButtonText: 'OK' });
